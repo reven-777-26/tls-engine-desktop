@@ -7,7 +7,6 @@ import { ChainTab } from "./components/ChainTab";
 import { ProtocolsTab } from "./components/ProtocolsTab";
 import { HeadersTab } from "./components/HeadersTab";
 import { RawJsonTab } from "./components/RawJsonTab";
-import { SettingsModal } from "./components/SettingsModal";
 import { ConfirmModal } from "./components/ConfirmModal";
 import {
   inspectHost,
@@ -49,7 +48,6 @@ export function App() {
   const [isCheckingHealth, setIsCheckingHealth] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
 
   // Load initial history & health status on app startup
@@ -186,10 +184,6 @@ export function App() {
         activeNav={activeNav}
         onInspectClick={handleInspectRailClick}
         onHistoryClick={handleHistoryRailClick}
-        onOpenSettings={() => {
-          setActiveNav("settings");
-          setShowSettingsModal(true);
-        }}
       />
 
       {/* 2. Middle History Column */}
@@ -444,6 +438,10 @@ export function App() {
           ) : (
             /* Welcome / Initial Dashboard Screen */
             <div className="welcome-screen">
+              <div className="welcome-icon-box">
+                <ShieldCheck size={38} strokeWidth={2} />
+              </div>
+
               <div>
                 <h1 className="welcome-title">TLS Engine Desktop</h1>
                 <p className="welcome-sub" style={{ marginTop: 8 }}>
@@ -514,17 +512,6 @@ export function App() {
           )}
         </div>
       </div>
-
-      {/* Settings Dialog Modal */}
-      {showSettingsModal && (
-        <SettingsModal
-          historyCount={history.length}
-          onClose={() => {
-            setShowSettingsModal(false);
-            setActiveNav("inspect");
-          }}
-        />
-      )}
 
       {/* Clear All Confirmation Modal */}
       <ConfirmModal

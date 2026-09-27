@@ -2,24 +2,26 @@ import React from "react";
 import {
   Search,
   History,
-  Settings,
+  ShieldCheck,
 } from "lucide-react";
 
 interface NavRailProps {
   activeNav: string;
   onInspectClick: () => void;
   onHistoryClick: () => void;
-  onOpenSettings: () => void;
 }
 
 export const NavRail: React.FC<NavRailProps> = ({
   activeNav,
   onInspectClick,
   onHistoryClick,
-  onOpenSettings,
 }) => {
   return (
     <div className="nav-rail">
+      <div className="rail-logo" title="TLS Engine Desktop">
+        <ShieldCheck size={22} strokeWidth={2.2} />
+      </div>
+
       <div className="rail-items">
         <button
           className={`rail-btn ${activeNav === "inspect" ? "active" : ""}`}
@@ -37,17 +39,6 @@ export const NavRail: React.FC<NavRailProps> = ({
         >
           <History size={19} />
           <span>History</span>
-        </button>
-      </div>
-
-      <div className="rail-bottom">
-        <button
-          className={`rail-btn ${activeNav === "settings" ? "active" : ""}`}
-          onClick={onOpenSettings}
-          title="Application Settings & Info"
-        >
-          <Settings size={18} />
-          <span>Settings</span>
         </button>
       </div>
     </div>
