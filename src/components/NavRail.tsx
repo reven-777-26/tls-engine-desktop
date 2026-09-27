@@ -2,29 +2,22 @@ import React from "react";
 import {
   Search,
   History,
-  Activity,
   ShieldCheck,
   Settings,
 } from "lucide-react";
 
 interface NavRailProps {
   activeNav: string;
-  setActiveNav: (nav: string) => void;
   onInspectClick: () => void;
-  onOpenHealth: () => void;
-  isHistoryOpen: boolean;
-  onToggleHistory: () => void;
-  onOpenCerts: () => void;
+  onHistoryClick: () => void;
+  onOpenSettings: () => void;
 }
 
 export const NavRail: React.FC<NavRailProps> = ({
   activeNav,
-  setActiveNav,
   onInspectClick,
-  onOpenHealth,
-  isHistoryOpen,
-  onToggleHistory,
-  onOpenCerts,
+  onHistoryClick,
+  onOpenSettings,
 }) => {
   return (
     <div className="nav-rail">
@@ -43,40 +36,19 @@ export const NavRail: React.FC<NavRailProps> = ({
         </button>
 
         <button
-          className={`rail-btn ${isHistoryOpen ? "active" : ""}`}
-          onClick={onToggleHistory}
-          title={isHistoryOpen ? "Close Inspections Side Panel" : "Open Inspections Side Panel"}
+          className={`rail-btn ${activeNav === "history" ? "active" : ""}`}
+          onClick={onHistoryClick}
+          title="Inspection History"
         >
           <History size={19} />
           <span>History</span>
-        </button>
-
-        <button
-          className={`rail-btn ${activeNav === "health" ? "active" : ""}`}
-          onClick={() => {
-            setActiveNav("health");
-            onOpenHealth();
-          }}
-          title="Service Health Status"
-        >
-          <Activity size={19} />
-          <span>Health</span>
-        </button>
-
-        <button
-          className={`rail-btn ${activeNav === "certs" ? "active" : ""}`}
-          onClick={onOpenCerts}
-          title="View Certificate Chain & Hierarchy"
-        >
-          <ShieldCheck size={19} />
-          <span>Certs</span>
         </button>
       </div>
 
       <div className="rail-bottom">
         <button
           className={`rail-btn ${activeNav === "settings" ? "active" : ""}`}
-          onClick={() => setActiveNav("settings")}
+          onClick={onOpenSettings}
           title="Application Settings & Info"
         >
           <Settings size={18} />

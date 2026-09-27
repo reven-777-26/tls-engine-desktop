@@ -96,6 +96,7 @@ export function App() {
       setCurrentInspection(envelope);
       setHostInput(envelope.host);
       setActiveTab("overview");
+      setActiveNav("inspect");
       await refreshHistory(searchQuery);
     } catch (err: any) {
       setCurrentInspection(null);
@@ -111,6 +112,7 @@ export function App() {
       const detail = await getInspectionDetail(item.id);
       setCurrentInspection(detail);
       setHostInput(detail.host);
+      setActiveNav("inspect");
     } catch (err: any) {
       setCurrentInspection(null);
       setError(err?.toString() || "Failed to load cached inspection record");
@@ -145,7 +147,7 @@ export function App() {
     }
   };
 
-  const handleInspectClick = () => {
+  const handleInspectRailClick = () => {
     setActiveNav("inspect");
     if (currentInspection && activeTab !== "overview") {
       setActiveTab("overview");
@@ -156,25 +158,13 @@ export function App() {
     }
   };
 
-  const handleOpenCerts = async () => {
-    setActiveNav("certs");
-    if (currentInspection) {
-      setActiveTab("chain");
-      return;
-    }
-
-    if (history.length > 0) {
-      try {
-        const detail = await getInspectionDetail(history[0].id);
-        setCurrentInspection(detail);
-        setHostInput(detail.host);
-        setActiveTab("chain");
-      } catch (err: any) {
-        console.error("Failed to load history item for certs:", err);
-      }
+  const handleHistoryRailClick = () => {
+    if (activeNav === "history" && isHistoryOpen) {
+      setIsHistoryOpen(false);
+      setActiveNav("inspect");
     } else {
-      await handleRunInspection("google.com");
-      setActiveTab("chain");
+      setIsHistoryOpen(true);
+      setActiveNav("history");
     }
   };
 
@@ -194,15 +184,12 @@ export function App() {
       {/* 1. Left Nav Rail */}
       <NavRail
         activeNav={activeNav}
-        setActiveNav={(nav) => {
-          setActiveNav(nav);
-          if (nav === "settings") setShowSettingsModal(true);
+        onInspectClick={handleInspectRailClick}
+        onHistoryClick={handleHistoryRailClick}
+        onOpenSettings={() => {
+          setActiveNav("settings");
+          setShowSettingsModal(true);
         }}
-        onInspectClick={handleInspectClick}
-        onOpenHealth={refreshHealth}
-        isHistoryOpen={isHistoryOpen}
-        onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
-        onOpenCerts={handleOpenCerts}
       />
 
       {/* 2. Middle History Column */}
@@ -215,7 +202,10 @@ export function App() {
           onSelectInspection={handleSelectHistoryItem}
           onDeleteInspection={handleDeleteHistoryItem}
           onClearHistory={handleClearAllHistory}
-          onClose={() => setIsHistoryOpen(false)}
+          onClose={() => {
+            setIsHistoryOpen(false);
+            setActiveNav("inspect");
+          }}
         />
       )}
 
@@ -228,7 +218,10 @@ export function App() {
               <button
                 type="button"
                 className="sidebar-toggle-btn"
-                onClick={() => setIsHistoryOpen(true)}
+                onClick={() => {
+                  setIsHistoryOpen(true);
+                  setActiveNav("history");
+                }}
                 title="Open Inspections Panel"
               >
                 <PanelLeftOpen size={15} />
@@ -376,7 +369,7 @@ export function App() {
               className={`tab-btn ${activeTab === "chain" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("chain");
-                setActiveNav("certs");
+                setActiveNav("inspect");
               }}
             >
               <Layers size={14} />
@@ -530,7 +523,10 @@ export function App() {
       {showSettingsModal && (
         <SettingsModal
           historyCount={history.length}
-          onClose={() => setShowSettingsModal(false)}
+          onClose={() => {
+            setShowSettingsModal(false);
+            setActiveNav("inspect");
+          }}
         />
       )}
 
