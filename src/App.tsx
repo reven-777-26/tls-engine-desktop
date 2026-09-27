@@ -30,7 +30,6 @@ import {
   Shield,
   Layers,
   ArrowRight,
-  Database,
   RefreshCw,
   Activity,
   PanelLeftOpen,
@@ -301,14 +300,6 @@ export function App() {
                   : "Server Status: Checking..."}
               </span>
             </div>
-
-            {/* Offline or Live Badge */}
-            {currentInspection?.from_cache && (
-              <span className="badge-tag" style={{ color: "#38bdf8", borderColor: "rgba(56, 189, 248, 0.4)" }}>
-                <Database size={11} style={{ marginRight: 4 }} />
-                Offline Cache
-              </span>
-            )}
           </div>
         </div>
 
