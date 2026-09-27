@@ -9,6 +9,7 @@ import { HeadersTab } from "./components/HeadersTab";
 import { RawJsonTab } from "./components/RawJsonTab";
 import { HealthModal } from "./components/HealthModal";
 import { SettingsModal } from "./components/SettingsModal";
+import { ConfirmModal } from "./components/ConfirmModal";
 import {
   inspectHost,
   checkHealth,
@@ -49,6 +50,7 @@ export function App() {
 
   const [showHealthModal, setShowHealthModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
 
   // Load initial history & health status on app startup
   useEffect(() => {
@@ -127,14 +129,17 @@ export function App() {
     }
   };
 
-  const handleClearAllHistory = async () => {
-    if (window.confirm("Are you sure you want to clear all inspection history?")) {
-      try {
-        await clearHistory();
-        setHistory([]);
-      } catch (err: any) {
-        console.error("Failed to clear history:", err);
-      }
+  const handleClearAllHistory = () => {
+    setShowClearConfirmModal(true);
+  };
+
+  const executeClearAllHistory = async () => {
+    try {
+      await clearHistory();
+      setHistory([]);
+      setShowClearConfirmModal(false);
+    } catch (err: any) {
+      console.error("Failed to clear history:", err);
     }
   };
 
@@ -422,6 +427,17 @@ export function App() {
           onClose={() => setShowSettingsModal(false)}
         />
       )}
+
+      {/* Clear All Confirmation Modal */}
+      <ConfirmModal
+        isOpen={showClearConfirmModal}
+        title="Clear All History"
+        message="Are you sure you want to delete all inspection history?"
+        confirmText="Delete All"
+        cancelText="Cancel"
+        onConfirm={executeClearAllHistory}
+        onCancel={() => setShowClearConfirmModal(false)}
+      />
     </div>
   );
 }

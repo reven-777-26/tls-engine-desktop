@@ -190,6 +190,27 @@ body, html, #root {
   background-color: var(--status-danger-dim);
 }
 
+.clear-all-box-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  color: #f87171;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.clear-all-box-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #fca5a5;
+}
+
 .search-box-wrap {
   padding: 10px 14px;
   border-bottom: 1px solid var(--border-subtle);
@@ -334,20 +355,77 @@ body, html, #root {
   top: 50%;
   transform: translateY(-50%);
   display: none;
-  padding: 4px;
-  background: var(--bg-card);
-  border-radius: 4px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  margin: 0;
+  background: #19242c;
+  border-radius: 5px;
   color: var(--text-muted);
-  border: 1px solid var(--border-subtle);
+  border: 1px solid #283a48;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  line-height: 1;
+}
+
+.history-item-delete svg {
+  display: block;
+  margin: auto;
 }
 
 .history-item:hover .history-item-delete {
   display: flex;
 }
 
+.history-item:hover .history-time {
+  opacity: 0;
+  visibility: hidden;
+}
+
 .history-item-delete:hover {
-  color: var(--status-danger);
-  border-color: var(--status-danger);
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+}
+
+/* Modal action buttons */
+.cancel-btn {
+  background: transparent;
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cancel-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: #38bdf8;
+}
+
+.danger-btn {
+  background: #dc2626;
+  border: 1px solid #ef4444;
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 7px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
+}
+
+.danger-btn:hover {
+  background: #b91c1c;
 }
 
 .empty-state {

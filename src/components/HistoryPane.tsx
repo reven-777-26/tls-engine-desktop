@@ -51,11 +51,12 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
         <div className="history-actions">
           {history.length > 0 && (
             <button
-              className="icon-btn-subtle danger"
+              className="clear-all-box-btn"
               onClick={onClearHistory}
               title="Clear all inspection history"
             >
-              <Trash2 size={15} />
+              <Trash2 size={12} />
+              <span>Clear all</span>
             </button>
           )}
         </div>
