@@ -248,7 +248,6 @@ export function App() {
                   handleRunInspection();
                 }}
               >
-                <Search size={15} className="search-icon" />
                 <input
                   type="text"
                   className="host-input"
@@ -269,7 +268,7 @@ export function App() {
                     </>
                   ) : (
                     <>
-                      <Shield size={14} />
+                      <Search size={14} />
                       <span>Inspect</span>
                     </>
                   )}
@@ -468,7 +467,6 @@ export function App() {
                 }}
               >
                 <div className="welcome-input-wrap">
-                  <Search size={16} className="search-icon" />
                   <input
                     type="text"
                     className="welcome-search-input"
@@ -490,7 +488,7 @@ export function App() {
                       </>
                     ) : (
                       <>
-                        <Shield size={14} />
+                        <Search size={14} />
                         <span>Inspect TLS</span>
                       </>
                     )}
