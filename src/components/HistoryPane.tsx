@@ -90,17 +90,17 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
                 className={`history-item ${isSelected ? "selected" : ""}`}
                 onClick={() => onSelectInspection(item)}
               >
-                <div className="history-item-content">
-                  <div className="history-item-top">
-                    <div className="history-host-row">
-                      <span className={`status-dot ${isSelected ? "blue" : "muted"}`} />
-                      <span className="history-host-text" title={item.host}>
-                        {item.host}
-                      </span>
-                    </div>
-                    <span className="history-time">{formatTime(item.inspected_at)}</span>
+                <div className="history-item-top">
+                  <div className="history-host-row">
+                    <span className={`status-dot ${isSelected ? "blue" : "muted"}`} />
+                    <span className="history-host-text" title={item.host}>
+                      {item.host}
+                    </span>
                   </div>
+                  <span className="history-time">{formatTime(item.inspected_at)}</span>
+                </div>
 
+                <div className="history-item-bottom">
                   <div className="history-item-meta">
                     {item.is_trusted ? (
                       <span className="badge-tag trusted" title="Trusted certificate chain">
@@ -124,17 +124,17 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
                       </span>
                     )}
                   </div>
-                </div>
 
-                <button
-                  type="button"
-                  className="history-item-delete"
-                  onClick={(e) => onDeleteInspection(e, item.id)}
-                  title="Delete from history"
-                  aria-label="Delete entry"
-                >
-                  <Trash2 size={12} />
-                </button>
+                  <button
+                    type="button"
+                    className="history-item-delete"
+                    onClick={(e) => onDeleteInspection(e, item.id)}
+                    title="Delete from history"
+                    aria-label="Delete entry"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
               </div>
             );
           })
