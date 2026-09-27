@@ -29,7 +29,6 @@ import {
   Layers,
   ArrowRight,
   RefreshCw,
-  Activity,
   PanelLeftOpen,
 } from "lucide-react";
 
@@ -274,10 +273,6 @@ export function App() {
                   : "Server Status: Offline"
               }
             >
-              <Activity
-                size={13}
-                className={`activity-icon ${isCheckingHealth ? "checking" : health?.healthy ? "online" : health ? "offline" : "checking"}`}
-              />
               <span
                 className={`health-indicator ${isCheckingHealth ? "checking" : health?.healthy ? "online" : health ? "offline" : "checking"}`}
               />
