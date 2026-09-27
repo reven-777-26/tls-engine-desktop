@@ -32,11 +32,14 @@ import {
   ArrowRight,
   Database,
   RefreshCw,
+  Activity,
+  PanelLeftOpen,
 } from "lucide-react";
 
 export function App() {
   const [activeNav, setActiveNav] = useState("inspect");
   const [activeTab, setActiveTab] = useState<"overview" | "chain" | "protocols" | "headers" | "json">("overview");
+  const [isHistoryOpen, setIsHistoryOpen] = useState(true);
 
   const [hostInput, setHostInput] = useState("");
   const [currentInspection, setCurrentInspection] = useState<InspectionEnvelope | null>(null);
@@ -145,6 +148,39 @@ export function App() {
     }
   };
 
+  const handleInspectClick = () => {
+    setActiveNav("inspect");
+    if (currentInspection && activeTab !== "overview") {
+      setActiveTab("overview");
+    } else {
+      setHostInput("");
+      setCurrentInspection(null);
+      setError(null);
+    }
+  };
+
+  const handleOpenCerts = async () => {
+    setActiveNav("certs");
+    if (currentInspection) {
+      setActiveTab("chain");
+      return;
+    }
+
+    if (history.length > 0) {
+      try {
+        const detail = await getInspectionDetail(history[0].id);
+        setCurrentInspection(detail);
+        setHostInput(detail.host);
+        setActiveTab("chain");
+      } catch (err: any) {
+        console.error("Failed to load history item for certs:", err);
+      }
+    } else {
+      await handleRunInspection("google.com");
+      setActiveTab("chain");
+    }
+  };
+
   const sampleDomains = [
     "example.com",
     "google.com",
@@ -165,67 +201,83 @@ export function App() {
           setActiveNav(nav);
           if (nav === "settings") setShowSettingsModal(true);
         }}
-        onNewScan={() => {
-          setHostInput("");
-          setCurrentInspection(null);
-          setError(null);
-        }}
+        onInspectClick={handleInspectClick}
         onOpenHealth={() => setShowHealthModal(true)}
+        isHistoryOpen={isHistoryOpen}
+        onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
+        onOpenCerts={handleOpenCerts}
       />
 
       {/* 2. Middle History Column */}
-      <HistoryPane
-        history={history}
-        selectedId={currentInspection?.id || null}
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        onSelectInspection={handleSelectHistoryItem}
-        onDeleteInspection={handleDeleteHistoryItem}
-        onClearHistory={handleClearAllHistory}
-      />
+      {isHistoryOpen && (
+        <HistoryPane
+          history={history}
+          selectedId={currentInspection?.id || null}
+          searchQuery={searchQuery}
+          onSearchChange={setSearchQuery}
+          onSelectInspection={handleSelectHistoryItem}
+          onDeleteInspection={handleDeleteHistoryItem}
+          onClearHistory={handleClearAllHistory}
+          onClose={() => setIsHistoryOpen(false)}
+        />
+      )}
 
       {/* 3. Main Workspace */}
       <div className="main-workspace">
         {/* Top Header Inspection Bar */}
         <div className="top-inspection-bar">
-          {currentInspection ? (
-            <form
-              className="host-input-group"
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleRunInspection();
-              }}
-            >
-              <Search size={15} className="search-icon" />
-              <input
-                type="text"
-                className="host-input"
-                placeholder="Enter domain or IP (e.g. example.com, github.com)..."
-                value={hostInput}
-                onChange={(e) => setHostInput(e.target.value)}
-                disabled={isInspecting}
-              />
+          <div className="top-bar-left">
+            {!isHistoryOpen && (
               <button
-                type="submit"
-                className="inspect-btn"
-                disabled={isInspecting || !hostInput.trim()}
+                type="button"
+                className="sidebar-toggle-btn"
+                onClick={() => setIsHistoryOpen(true)}
+                title="Open Inspections Panel"
               >
-                {isInspecting ? (
-                  <>
-                    <RefreshCw size={14} className="spin" />
-                    <span>Inspecting...</span>
-                  </>
-                ) : (
-                  <>
-                    <Shield size={14} />
-                    <span>Inspect TLS</span>
-                  </>
-                )}
+                <PanelLeftOpen size={15} />
+                <span>Inspections</span>
               </button>
-            </form>
-          ) : (
-            <div className="top-bar-placeholder" />
-          )}
+            )}
+          </div>
+
+          <div className="top-bar-center">
+            {currentInspection ? (
+              <form
+                className="host-input-group"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleRunInspection();
+                }}
+              >
+                <Search size={15} className="search-icon" />
+                <input
+                  type="text"
+                  className="host-input"
+                  placeholder="Enter domain or IP (e.g. example.com, github.com)..."
+                  value={hostInput}
+                  onChange={(e) => setHostInput(e.target.value)}
+                  disabled={isInspecting}
+                />
+                <button
+                  type="submit"
+                  className="inspect-btn"
+                  disabled={isInspecting || !hostInput.trim()}
+                >
+                  {isInspecting ? (
+                    <>
+                      <RefreshCw size={14} className="spin" />
+                      <span>Inspecting...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Shield size={14} />
+                      <span>Inspect</span>
+                    </>
+                  )}
+                </button>
+              </form>
+            ) : null}
+          </div>
 
           <div className="top-bar-right">
             {/* Live Health Badge */}
@@ -234,10 +286,20 @@ export function App() {
               onClick={() => setShowHealthModal(true)}
               title="Click to view backend service status"
             >
-              <span
-                className={`health-indicator ${health?.healthy ? "online" : "offline"}`}
+              <Activity
+                size={13}
+                className={`activity-icon ${health?.healthy ? "online" : health ? "offline" : "checking"}`}
               />
-              <span>{health?.healthy ? "Engine Online" : "Engine Degraded"}</span>
+              <span
+                className={`health-indicator ${health?.healthy ? "online" : health ? "offline" : "checking"}`}
+              />
+              <span>
+                {health
+                  ? health.healthy
+                    ? "Server Status: Online"
+                    : "Server Status: Offline"
+                  : "Server Status: Checking..."}
+              </span>
             </div>
 
             {/* Offline or Live Badge */}
@@ -306,7 +368,10 @@ export function App() {
           <div className="tabs-bar">
             <button
               className={`tab-btn ${activeTab === "overview" ? "active" : ""}`}
-              onClick={() => setActiveTab("overview")}
+              onClick={() => {
+                setActiveTab("overview");
+                setActiveNav("inspect");
+              }}
             >
               <Shield size={14} />
               <span>Overview</span>
@@ -314,7 +379,10 @@ export function App() {
 
             <button
               className={`tab-btn ${activeTab === "chain" ? "active" : ""}`}
-              onClick={() => setActiveTab("chain")}
+              onClick={() => {
+                setActiveTab("chain");
+                setActiveNav("certs");
+              }}
             >
               <Layers size={14} />
               <span>Certificate Chain ({currentInspection.data.certificates?.count || 0})</span>
@@ -322,7 +390,10 @@ export function App() {
 
             <button
               className={`tab-btn ${activeTab === "protocols" ? "active" : ""}`}
-              onClick={() => setActiveTab("protocols")}
+              onClick={() => {
+                setActiveTab("protocols");
+                setActiveNav("inspect");
+              }}
             >
               <Cpu size={14} />
               <span>TLS Protocols</span>
@@ -330,7 +401,10 @@ export function App() {
 
             <button
               className={`tab-btn ${activeTab === "headers" ? "active" : ""}`}
-              onClick={() => setActiveTab("headers")}
+              onClick={() => {
+                setActiveTab("headers");
+                setActiveNav("inspect");
+              }}
             >
               <Radio size={14} />
               <span>HTTP Headers</span>
@@ -338,7 +412,10 @@ export function App() {
 
             <button
               className={`tab-btn ${activeTab === "json" ? "active" : ""}`}
-              onClick={() => setActiveTab("json")}
+              onClick={() => {
+                setActiveTab("json");
+                setActiveNav("inspect");
+              }}
             >
               <FileCode size={14} />
               <span>Raw JSON</span>

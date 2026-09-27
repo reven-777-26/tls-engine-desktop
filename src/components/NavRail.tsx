@@ -10,15 +10,21 @@ import {
 interface NavRailProps {
   activeNav: string;
   setActiveNav: (nav: string) => void;
-  onNewScan: () => void;
+  onInspectClick: () => void;
   onOpenHealth: () => void;
+  isHistoryOpen: boolean;
+  onToggleHistory: () => void;
+  onOpenCerts: () => void;
 }
 
 export const NavRail: React.FC<NavRailProps> = ({
   activeNav,
   setActiveNav,
-  onNewScan,
+  onInspectClick,
   onOpenHealth,
+  isHistoryOpen,
+  onToggleHistory,
+  onOpenCerts,
 }) => {
   return (
     <div className="nav-rail">
@@ -29,20 +35,17 @@ export const NavRail: React.FC<NavRailProps> = ({
       <div className="rail-items">
         <button
           className={`rail-btn ${activeNav === "inspect" ? "active" : ""}`}
-          onClick={() => {
-            setActiveNav("inspect");
-            onNewScan();
-          }}
-          title="Run New Inspection"
+          onClick={onInspectClick}
+          title="Run New Inspection / Overview"
         >
           <Search size={20} />
           <span>Inspect</span>
         </button>
 
         <button
-          className={`rail-btn ${activeNav === "history" ? "active" : ""}`}
-          onClick={() => setActiveNav("history")}
-          title="Browse Saved Inspections"
+          className={`rail-btn ${isHistoryOpen ? "active" : ""}`}
+          onClick={onToggleHistory}
+          title={isHistoryOpen ? "Close Inspections Side Panel" : "Open Inspections Side Panel"}
         >
           <History size={19} />
           <span>History</span>
@@ -61,9 +64,9 @@ export const NavRail: React.FC<NavRailProps> = ({
         </button>
 
         <button
-          className={`rail-btn ${activeNav === "diagnostics" ? "active" : ""}`}
-          onClick={() => setActiveNav("diagnostics")}
-          title="Security Diagnostics"
+          className={`rail-btn ${activeNav === "certs" ? "active" : ""}`}
+          onClick={onOpenCerts}
+          title="View Certificate Chain & Hierarchy"
         >
           <ShieldCheck size={19} />
           <span>Certs</span>

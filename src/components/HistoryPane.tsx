@@ -1,6 +1,6 @@
 import React from "react";
 import { HistoryItemSummary } from "../types";
-import { Search, Trash2, Inbox, ShieldCheck, AlertTriangle } from "lucide-react";
+import { Search, Trash2, Inbox, ShieldCheck, AlertTriangle, PanelLeftClose } from "lucide-react";
 
 interface HistoryPaneProps {
   history: HistoryItemSummary[];
@@ -10,6 +10,7 @@ interface HistoryPaneProps {
   onSelectInspection: (item: HistoryItemSummary) => void;
   onDeleteInspection: (e: React.MouseEvent, id: number) => void;
   onClearHistory: () => void;
+  onClose: () => void;
 }
 
 export const HistoryPane: React.FC<HistoryPaneProps> = ({
@@ -20,6 +21,7 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
   onSelectInspection,
   onDeleteInspection,
   onClearHistory,
+  onClose,
 }) => {
   const formatTime = (isoString: string) => {
     try {
@@ -59,6 +61,16 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
               <span>Clear all</span>
             </button>
           )}
+
+          <button
+            type="button"
+            className="icon-btn-subtle"
+            onClick={onClose}
+            title="Close Inspections panel"
+            aria-label="Close side panel"
+          >
+            <PanelLeftClose size={16} />
+          </button>
         </div>
       </div>
 

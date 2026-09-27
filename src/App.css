@@ -142,6 +142,19 @@ body, html, #root {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
+  flex-shrink: 0;
+  animation: slideInPane 0.18s ease-out;
+}
+
+@keyframes slideInPane {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .history-header {
@@ -459,27 +472,71 @@ body, html, #root {
   background-color: var(--bg-main);
 }
 
-/* Top Inspection Bar */
+/* Top Inspection Bar - Robust 3-Section Non-Overlapping Layout */
 .top-inspection-bar {
-  padding: 12px 20px;
+  padding: 10px 18px;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
-  justify-content: center;
-  position: relative;
+  justify-content: space-between;
+  gap: 16px;
   background-color: var(--bg-sidebar);
+  min-height: 56px;
+  width: 100%;
+}
+
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.sidebar-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-secondary);
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.sidebar-toggle-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--blue-primary);
+  border-color: var(--blue-border);
+}
+
+.top-bar-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 2 1 auto;
+  max-width: 540px;
+  min-width: 240px;
+  width: 100%;
 }
 
 .host-input-group {
   display: flex;
   align-items: center;
   width: 100%;
-  max-width: min(580px, calc(100% - 240px));
   position: relative;
 }
 
 .host-input-group .search-icon {
+  position: absolute;
   left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
 }
 
 .host-input {
@@ -487,12 +544,13 @@ body, html, #root {
   background-color: var(--bg-input);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  padding: 9px 12px 9px 38px;
+  padding: 8px 12px 8px 36px;
   color: var(--text-primary);
   font-size: 13px;
   font-family: monospace;
   outline: none;
   transition: all 0.15s ease;
+  min-width: 120px;
 }
 
 .host-input:focus {
@@ -501,20 +559,21 @@ body, html, #root {
 }
 
 .inspect-btn {
-  margin-left: 10px;
+  margin-left: 8px;
   background-color: var(--btn-blue);
   color: #fff;
   border: none;
   border-radius: 7px;
-  padding: 8px 18px;
+  padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   transition: background-color 0.15s ease;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .inspect-btn:hover:not(:disabled) {
@@ -527,20 +586,20 @@ body, html, #root {
 }
 
 .top-bar-right {
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 10px;
+  flex: 1 1 0%;
+  min-width: fit-content;
+  flex-shrink: 0;
 }
 
 .health-pill {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
+  padding: 5px 12px;
   border-radius: 20px;
   font-size: 11px;
   font-weight: 500;
@@ -549,16 +608,37 @@ body, html, #root {
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   transition: all 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .health-pill:hover {
   background-color: var(--bg-card-hover);
+  border-color: var(--blue-border);
+}
+
+.activity-icon {
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.activity-icon.online {
+  color: var(--status-success);
+}
+
+.activity-icon.offline {
+  color: var(--status-danger);
+}
+
+.activity-icon.checking {
+  color: var(--text-muted);
 }
 
 .health-indicator {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .health-indicator.online {
@@ -569,6 +649,10 @@ body, html, #root {
 .health-indicator.offline {
   background-color: var(--status-danger);
   box-shadow: 0 0 8px rgba(239, 68, 68, 0.6);
+}
+
+.health-indicator.checking {
+  background-color: var(--text-muted);
 }
 
 /* Header summary card */
