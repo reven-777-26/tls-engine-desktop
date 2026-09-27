@@ -90,46 +90,50 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
                 className={`history-item ${isSelected ? "selected" : ""}`}
                 onClick={() => onSelectInspection(item)}
               >
-                <div className="history-item-top">
-                  <div className="history-host-row">
-                    <span className={`status-dot ${isSelected ? "blue" : "muted"}`} />
-                    <span className="history-host-text" title={item.host}>
-                      {item.host}
-                    </span>
+                <div className="history-item-content">
+                  <div className="history-item-top">
+                    <div className="history-host-row">
+                      <span className={`status-dot ${isSelected ? "blue" : "muted"}`} />
+                      <span className="history-host-text" title={item.host}>
+                        {item.host}
+                      </span>
+                    </div>
+                    <span className="history-time">{formatTime(item.inspected_at)}</span>
                   </div>
-                  <span className="history-time">{formatTime(item.inspected_at)}</span>
-                </div>
 
-                <div className="history-item-meta">
-                  {item.is_trusted ? (
-                    <span className="badge-tag trusted" title="Trusted certificate chain">
-                      <ShieldCheck size={11} style={{ marginRight: 3 }} />
-                      Trusted
-                    </span>
-                  ) : (
-                    <span className="badge-tag untrusted" title="Certificate issue detected">
-                      <AlertTriangle size={11} style={{ marginRight: 3 }} />
-                      Issues
-                    </span>
-                  )}
+                  <div className="history-item-meta">
+                    {item.is_trusted ? (
+                      <span className="badge-tag trusted" title="Trusted certificate chain">
+                        <ShieldCheck size={11} style={{ marginRight: 3 }} />
+                        Trusted
+                      </span>
+                    ) : (
+                      <span className="badge-tag untrusted" title="Certificate issue detected">
+                        <AlertTriangle size={11} style={{ marginRight: 3 }} />
+                        Issues
+                      </span>
+                    )}
 
-                  {item.tls_version && (
-                    <span className="badge-tag">{item.tls_version}</span>
-                  )}
+                    {item.tls_version && (
+                      <span className="badge-tag">{item.tls_version}</span>
+                    )}
 
-                  {item.x_cache && (
-                    <span className="badge-tag cache-hit">
-                      {item.x_cache}
-                    </span>
-                  )}
+                    {item.x_cache && (
+                      <span className="badge-tag cache-hit">
+                        {item.x_cache}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <button
+                  type="button"
                   className="history-item-delete"
                   onClick={(e) => onDeleteInspection(e, item.id)}
                   title="Delete from history"
+                  aria-label="Delete entry"
                 >
-                  <Trash2 size={13} />
+                  <Trash2 size={12} />
                 </button>
               </div>
             );
