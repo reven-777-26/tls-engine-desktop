@@ -5,7 +5,6 @@ import {
   Activity,
   ShieldCheck,
   Settings,
-  Lock,
 } from "lucide-react";
 
 interface NavRailProps {
@@ -24,7 +23,7 @@ export const NavRail: React.FC<NavRailProps> = ({
   return (
     <div className="nav-rail">
       <div className="rail-logo" title="TLS Engine Desktop">
-        <Lock size={20} strokeWidth={2.5} />
+        <ShieldCheck size={22} strokeWidth={2.2} />
       </div>
 
       <div className="rail-items">

@@ -3,7 +3,7 @@ import { InspectionEnvelope } from "../types";
 import {
   AlertTriangle,
   Server,
-  Lock,
+  Shield,
   Radio,
   FileText,
 } from "lucide-react";
@@ -44,7 +44,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
         {/* TLS Negotiation Card */}
         <div className="section-card">
           <div className="card-title">
-            <Lock size={16} />
+            <Shield size={16} />
             <span>Negotiated TLS Parameters</span>
           </div>
 

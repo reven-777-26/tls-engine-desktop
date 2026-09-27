@@ -21,7 +21,7 @@ import {
 import { HealthStatus, HistoryItemSummary, InspectionEnvelope } from "./types";
 import {
   Search,
-  Lock,
+  Cpu,
   ShieldCheck,
   AlertTriangle,
   Globe,
@@ -214,7 +214,7 @@ export function App() {
                 </>
               ) : (
                 <>
-                  <Lock size={14} />
+                  <Shield size={14} />
                   <span>Inspect TLS</span>
                 </>
               )}
@@ -318,7 +318,7 @@ export function App() {
               className={`tab-btn ${activeTab === "protocols" ? "active" : ""}`}
               onClick={() => setActiveTab("protocols")}
             >
-              <Lock size={14} />
+              <Cpu size={14} />
               <span>TLS Protocols</span>
             </button>
 
@@ -374,7 +374,7 @@ export function App() {
             /* Welcome / Initial Dashboard Screen */
             <div className="welcome-screen">
               <div className="welcome-icon-box">
-                <Lock size={36} />
+                <ShieldCheck size={38} strokeWidth={2} />
               </div>
 
               <div>
