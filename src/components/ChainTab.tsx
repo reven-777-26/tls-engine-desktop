@@ -16,10 +16,15 @@ interface ChainTabProps {
 
 export const ChainTab: React.FC<ChainTabProps> = ({ chain = [] }) => {
   const [expandedPems, setExpandedPems] = useState<Record<number, boolean>>({});
+  const [expandedSans, setExpandedSans] = useState<Record<number, boolean>>({});
   const [copiedFingerprint, setCopiedFingerprint] = useState<string | null>(null);
 
   const togglePem = (idx: number) => {
     setExpandedPems((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
+  const toggleSans = (idx: number) => {
+    setExpandedSans((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   const copyToClipboard = (text: string, label: string) => {
@@ -182,11 +187,24 @@ export const ChainTab: React.FC<ChainTabProps> = ({ chain = [] }) => {
                   SANs ({cert.subject_alt_names.length}):
                 </span>
                 <div className="chip-container">
-                  {cert.subject_alt_names.map((san, sIdx) => (
+                  {(expandedSans[idx]
+                    ? cert.subject_alt_names
+                    : cert.subject_alt_names.slice(0, 16)
+                  ).map((san, sIdx) => (
                     <span key={sIdx} className="chip">
                       {san.value}
                     </span>
                   ))}
+                  {cert.subject_alt_names.length > 16 && (
+                    <button
+                      type="button"
+                      className="chip-more-btn"
+                      onClick={() => toggleSans(idx)}
+                      title={expandedSans[idx] ? "Show fewer domains" : "Show all domains"}
+                    >
+                      {expandedSans[idx] ? "Show less" : `+${cert.subject_alt_names.length - 16} more`}
+                    </button>
+                  )}
                 </div>
               </div>
             )}

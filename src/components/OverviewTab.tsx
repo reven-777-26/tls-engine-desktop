@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { InspectionEnvelope } from "../types";
 import {
   AlertTriangle,
@@ -13,6 +13,7 @@ interface OverviewTabProps {
 }
 
 export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
+  const [showAllSans, setShowAllSans] = useState(false);
   const { data, metadata } = envelope;
   const isTrusted = data.verification?.trusted ?? false;
   const issues = data.verification?.issues ?? [];
@@ -194,15 +195,23 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
                 Subject Alternative Names (SANs) - {leafCert.subject_alt_names.length} domains:
               </span>
               <div className="chip-container">
-                {leafCert.subject_alt_names.slice(0, 16).map((san, idx) => (
+                {(showAllSans
+                  ? leafCert.subject_alt_names
+                  : leafCert.subject_alt_names.slice(0, 16)
+                ).map((san, idx) => (
                   <span key={idx} className="chip">
                     {san.value}
                   </span>
                 ))}
                 {leafCert.subject_alt_names.length > 16 && (
-                  <span className="chip" style={{ color: "#38bdf8" }}>
-                    +{leafCert.subject_alt_names.length - 16} more
-                  </span>
+                  <button
+                    type="button"
+                    className="chip-more-btn"
+                    onClick={() => setShowAllSans((prev) => !prev)}
+                    title={showAllSans ? "Show fewer domains" : "Show all domains"}
+                  >
+                    {showAllSans ? "Show less" : `+${leafCert.subject_alt_names.length - 16} more`}
+                  </button>
                 )}
               </div>
             </div>
