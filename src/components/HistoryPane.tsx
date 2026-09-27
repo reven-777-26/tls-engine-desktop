@@ -32,11 +32,22 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
         date.getMonth() === now.getMonth() &&
         date.getDate() === now.getDate();
 
+      const yesterday = new Date(now);
+      yesterday.setDate(now.getDate() - 1);
+      const isYesterday =
+        date.getFullYear() === yesterday.getFullYear() &&
+        date.getMonth() === yesterday.getMonth() &&
+        date.getDate() === yesterday.getDate();
+
       const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
       if (isToday) {
         return `Today ${timeStr}`;
       }
-      return `${date.toISOString().split("T")[0]} ${timeStr}`;
+      if (isYesterday) {
+        return `Yesterday ${timeStr}`;
+      }
+      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      return `${monthNames[date.getMonth()]} ${date.getDate()} ${timeStr}`;
     } catch {
       return isoString;
     }
