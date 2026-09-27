@@ -98,6 +98,7 @@ export function App() {
       setActiveTab("overview");
       await refreshHistory(searchQuery);
     } catch (err: any) {
+      setCurrentInspection(null);
       setError(err?.toString() || "An unexpected error occurred during TLS inspection.");
     } finally {
       setIsInspecting(false);
@@ -111,6 +112,7 @@ export function App() {
       setCurrentInspection(detail);
       setHostInput(detail.host);
     } catch (err: any) {
+      setCurrentInspection(null);
       setError(err?.toString() || "Failed to load cached inspection record");
     }
   };

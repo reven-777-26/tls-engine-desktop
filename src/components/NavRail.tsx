@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Edit3,
+  ScanSearch,
   History,
   Activity,
   ShieldCheck,
@@ -35,7 +35,7 @@ export const NavRail: React.FC<NavRailProps> = ({
           }}
           title="Run New Inspection"
         >
-          <Edit3 size={19} />
+          <ScanSearch size={20} />
           <span>Inspect</span>
         </button>
 
