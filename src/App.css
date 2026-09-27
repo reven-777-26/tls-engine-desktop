@@ -133,9 +133,9 @@ body, html, #root {
 
 /* Middle History Sidebar */
 .history-pane {
-  width: 330px;
-  min-width: 300px;
-  max-width: 380px;
+  width: 260px;
+  min-width: 240px;
+  max-width: 280px;
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border-subtle);
   display: flex;
@@ -158,7 +158,7 @@ body, html, #root {
 }
 
 .history-header {
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--border-subtle);
   display: flex;
   align-items: center;
@@ -225,7 +225,7 @@ body, html, #root {
 }
 
 .search-box-wrap {
-  padding: 10px 14px;
+  padding: 8px 12px;
   border-bottom: 1px solid var(--border-subtle);
   position: relative;
   display: flex;
@@ -234,7 +234,7 @@ body, html, #root {
 
 .search-icon {
   position: absolute;
-  left: 24px;
+  left: 22px;
   color: var(--text-muted);
   pointer-events: none;
 }
@@ -244,7 +244,7 @@ body, html, #root {
   background-color: var(--bg-input);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  padding: 6px 10px 6px 32px;
+  padding: 6px 10px 6px 28px;
   color: var(--text-primary);
   font-size: 12px;
   outline: none;
@@ -265,8 +265,8 @@ body, html, #root {
 .history-item {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 5px 16px;
+  gap: 7px;
+  padding: 9px 12px;
   border-bottom: 1px solid rgba(34, 48, 58, 0.45);
   cursor: pointer;
   transition: background-color 0.12s ease;
@@ -286,7 +286,7 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px;
   width: 100%;
   min-width: 0;
 }
@@ -294,7 +294,7 @@ body, html, #root {
 .history-host-row {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
   flex: 1 1 auto;
   overflow: hidden;
@@ -343,7 +343,7 @@ body, html, #root {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
   width: 100%;
   min-width: 0;
 }
@@ -351,7 +351,7 @@ body, html, #root {
 .history-item-meta {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   flex-wrap: nowrap;
   flex: 1 1 auto;
   min-width: 0;
@@ -361,9 +361,9 @@ body, html, #root {
 .badge-tag {
   display: inline-flex;
   align-items: center;
-  padding: 2px 7px;
+  padding: 1.5px 6px;
   border-radius: 4px;
-  font-size: 10.5px;
+  font-size: 10px;
   font-weight: 500;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-subtle);
@@ -393,8 +393,8 @@ body, html, #root {
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   padding: 0;
   margin: 0;
   margin-left: auto;
