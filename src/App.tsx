@@ -7,7 +7,6 @@ import { ChainTab } from "./components/ChainTab";
 import { ProtocolsTab } from "./components/ProtocolsTab";
 import { HeadersTab } from "./components/HeadersTab";
 import { RawJsonTab } from "./components/RawJsonTab";
-import { HealthModal } from "./components/HealthModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { ConfirmModal } from "./components/ConfirmModal";
 import {
@@ -50,7 +49,6 @@ export function App() {
   const [isCheckingHealth, setIsCheckingHealth] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [showHealthModal, setShowHealthModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
 
@@ -201,7 +199,7 @@ export function App() {
           if (nav === "settings") setShowSettingsModal(true);
         }}
         onInspectClick={handleInspectClick}
-        onOpenHealth={() => setShowHealthModal(true)}
+        onOpenHealth={refreshHealth}
         isHistoryOpen={isHistoryOpen}
         onToggleHistory={() => setIsHistoryOpen((prev) => !prev)}
         onOpenCerts={handleOpenCerts}
@@ -281,18 +279,25 @@ export function App() {
             {/* Live Health Badge */}
             <div
               className="health-pill"
-              onClick={() => setShowHealthModal(true)}
-              title="Click to view backend service status"
+              title={
+                isCheckingHealth
+                  ? "Checking server connectivity..."
+                  : health?.healthy
+                  ? "Server Status: Online"
+                  : "Server Status: Offline"
+              }
             >
               <Activity
                 size={13}
-                className={`activity-icon ${health?.healthy ? "online" : health ? "offline" : "checking"}`}
+                className={`activity-icon ${isCheckingHealth ? "checking" : health?.healthy ? "online" : health ? "offline" : "checking"}`}
               />
               <span
-                className={`health-indicator ${health?.healthy ? "online" : health ? "offline" : "checking"}`}
+                className={`health-indicator ${isCheckingHealth ? "checking" : health?.healthy ? "online" : health ? "offline" : "checking"}`}
               />
               <span>
-                {health
+                {isCheckingHealth
+                  ? "Server Status: Checking..."
+                  : health
                   ? health.healthy
                     ? "Server Status: Online"
                     : "Server Status: Offline"
@@ -520,16 +525,6 @@ export function App() {
           )}
         </div>
       </div>
-
-      {/* Health Dialog Modal */}
-      {showHealthModal && (
-        <HealthModal
-          health={health}
-          loading={isCheckingHealth}
-          onRefresh={refreshHealth}
-          onClose={() => setShowHealthModal(false)}
-        />
-      )}
 
       {/* Settings Dialog Modal */}
       {showSettingsModal && (
