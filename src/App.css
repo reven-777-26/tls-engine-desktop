@@ -752,17 +752,6 @@ body, html, #root {
   transition: border-color 0.15s ease;
 }
 
-.chain-card.leaf {
-  border-left: 4px solid var(--blue-primary);
-}
-
-.chain-card.intermediate {
-  border-left: 4px solid #38bdf8;
-}
-
-.chain-card.root {
-  border-left: 4px solid #10b981;
-}
 
 .chain-card-header {
   display: flex;
