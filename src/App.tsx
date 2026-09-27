@@ -188,40 +188,44 @@ export function App() {
       <div className="main-workspace">
         {/* Top Header Inspection Bar */}
         <div className="top-inspection-bar">
-          <form
-            className="host-input-group"
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleRunInspection();
-            }}
-          >
-            <Search size={15} className="search-icon" />
-            <input
-              type="text"
-              className="host-input"
-              placeholder="Enter domain or IP (e.g. example.com, github.com)..."
-              value={hostInput}
-              onChange={(e) => setHostInput(e.target.value)}
-              disabled={isInspecting}
-            />
-            <button
-              type="submit"
-              className="inspect-btn"
-              disabled={isInspecting || !hostInput.trim()}
+          {currentInspection ? (
+            <form
+              className="host-input-group"
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleRunInspection();
+              }}
             >
-              {isInspecting ? (
-                <>
-                  <RefreshCw size={14} className="spin" />
-                  <span>Inspecting...</span>
-                </>
-              ) : (
-                <>
-                  <Shield size={14} />
-                  <span>Inspect TLS</span>
-                </>
-              )}
-            </button>
-          </form>
+              <Search size={15} className="search-icon" />
+              <input
+                type="text"
+                className="host-input"
+                placeholder="Enter domain or IP (e.g. example.com, github.com)..."
+                value={hostInput}
+                onChange={(e) => setHostInput(e.target.value)}
+                disabled={isInspecting}
+              />
+              <button
+                type="submit"
+                className="inspect-btn"
+                disabled={isInspecting || !hostInput.trim()}
+              >
+                {isInspecting ? (
+                  <>
+                    <RefreshCw size={14} className="spin" />
+                    <span>Inspecting...</span>
+                  </>
+                ) : (
+                  <>
+                    <Shield size={14} />
+                    <span>Inspect TLS</span>
+                  </>
+                )}
+              </button>
+            </form>
+          ) : (
+            <div className="top-bar-placeholder" />
+          )}
 
           <div className="top-bar-right">
             {/* Live Health Badge */}
@@ -387,7 +391,46 @@ export function App() {
                 </p>
               </div>
 
-              <div style={{ marginTop: 16 }}>
+              {/* Centered Hero Search Bar */}
+              <form
+                className="welcome-search-form"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleRunInspection();
+                }}
+              >
+                <div className="welcome-input-wrap">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    className="welcome-search-input"
+                    placeholder="Enter domain or IP (e.g. example.com, github.com)..."
+                    value={hostInput}
+                    onChange={(e) => setHostInput(e.target.value)}
+                    disabled={isInspecting}
+                    autoFocus
+                  />
+                  <button
+                    type="submit"
+                    className="inspect-btn"
+                    disabled={isInspecting || !hostInput.trim()}
+                  >
+                    {isInspecting ? (
+                      <>
+                        <RefreshCw size={14} className="spin" />
+                        <span>Inspecting...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Shield size={14} />
+                        <span>Inspect TLS</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+
+              <div style={{ marginTop: 6 }}>
                 <span style={{ fontSize: "12px", color: "var(--text-muted)", display: "block", marginBottom: 10 }}>
                   Quick Launch Inspections:
                 </span>
