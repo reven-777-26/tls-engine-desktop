@@ -444,10 +444,6 @@ export function App() {
           ) : (
             /* Welcome / Initial Dashboard Screen */
             <div className="welcome-screen">
-              <div className="welcome-icon-box">
-                <ShieldCheck size={38} strokeWidth={2} />
-              </div>
-
               <div>
                 <h1 className="welcome-title">TLS Engine Desktop</h1>
                 <p className="welcome-sub" style={{ marginTop: 8 }}>

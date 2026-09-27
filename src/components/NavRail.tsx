@@ -2,7 +2,6 @@ import React from "react";
 import {
   Search,
   History,
-  ShieldCheck,
   Settings,
 } from "lucide-react";
 
@@ -21,10 +20,6 @@ export const NavRail: React.FC<NavRailProps> = ({
 }) => {
   return (
     <div className="nav-rail">
-      <div className="rail-logo" title="TLS Engine Desktop">
-        <ShieldCheck size={22} strokeWidth={2.2} />
-      </div>
-
       <div className="rail-items">
         <button
           className={`rail-btn ${activeNav === "inspect" ? "active" : ""}`}
