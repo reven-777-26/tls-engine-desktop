@@ -215,10 +215,10 @@ export function App() {
                   setIsHistoryOpen(true);
                   setActiveNav("history");
                 }}
-                title="Open Inspections Panel"
+                title="Open side panel"
+                aria-label="Open side panel"
               >
                 <PanelLeftOpen size={15} />
-                <span>Inspections</span>
               </button>
             )}
           </div>

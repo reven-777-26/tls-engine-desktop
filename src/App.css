@@ -507,17 +507,14 @@ body, html, #root {
 .sidebar-toggle-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   border-radius: 6px;
-  padding: 5px 10px;
-  font-size: 11.5px;
-  font-weight: 500;
+  padding: 6px 8px;
   cursor: pointer;
   transition: all 0.15s ease;
-  white-space: nowrap;
 }
 
 .sidebar-toggle-btn:hover {
