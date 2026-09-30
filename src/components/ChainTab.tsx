@@ -169,7 +169,7 @@ export const ChainTab: React.FC<ChainTabProps> = ({ chain = [] }) => {
                 </div>
                 <div
                   style={{
-                    fontFamily: "monospace",
+                    fontFamily: "var(--app-font-family)",
                     fontSize: "11px",
                     color: "#38bdf8",
                     wordBreak: "break-all",
@@ -236,11 +236,14 @@ export const ChainTab: React.FC<ChainTabProps> = ({ chain = [] }) => {
                       className="code-block"
                       style={{
                         padding: 12,
-                        background: "#0a0f13",
-                        borderRadius: 6,
+                        background: "#121212",
+                        border: "1px solid rgba(255, 255, 255, 0.08)",
+                        borderRadius: 8,
                         maxHeight: 180,
                         overflowY: "auto",
                         fontSize: "11px",
+                        fontFamily: "var(--app-font-mono)",
+                        lineHeight: 1.5,
                       }}
                     >
                       {cert.pem}

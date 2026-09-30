@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./App.css";
-import { NavRail } from "./components/NavRail";
+import { MacDock } from "./components/MacDock";
 import { HistoryPane } from "./components/HistoryPane";
 import { OverviewTab } from "./components/OverviewTab";
 import { ChainTab } from "./components/ChainTab";
@@ -8,6 +8,14 @@ import { ProtocolsTab } from "./components/ProtocolsTab";
 import { HeadersTab } from "./components/HeadersTab";
 import { RawJsonTab } from "./components/RawJsonTab";
 import { ConfirmModal } from "./components/ConfirmModal";
+import { SettingsModal } from "./components/SettingsModal";
+import {
+  UserAppSettings,
+  loadSettings,
+  saveSettings,
+  applySettingsToDOM,
+  DEFAULT_SETTINGS,
+} from "./settings";
 import {
   inspectHost,
   checkHealth,
@@ -30,12 +38,21 @@ import {
   ArrowRight,
   RefreshCw,
   PanelLeftOpen,
+  Home,
 } from "lucide-react";
+
+import { initAppleSmoothScroll } from "./smoothScroll";
 
 export function App() {
   const [activeNav, setActiveNav] = useState("inspect");
   const [activeTab, setActiveTab] = useState<"overview" | "chain" | "protocols" | "headers" | "json">("overview");
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [settings, setSettings] = useState<UserAppSettings>(() => {
+    const s = loadSettings();
+    applySettingsToDOM(s);
+    return s;
+  });
 
   const [hostInput, setHostInput] = useState("");
   const [currentInspection, setCurrentInspection] = useState<InspectionEnvelope | null>(null);
@@ -49,11 +66,31 @@ export function App() {
 
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
 
-  // Load initial history & health status on app startup
+  // Initialize Apple-style gravitational smooth scroll and load initial data
   useEffect(() => {
+    let scrollInstance: { destroy: () => void } | null = null;
+    if (settings.smoothScroll) {
+      scrollInstance = initAppleSmoothScroll();
+    }
     refreshHistory();
     refreshHealth();
-  }, []);
+
+    return () => {
+      scrollInstance?.destroy();
+    };
+  }, [settings.smoothScroll]);
+
+  const handleUpdateSettings = (newSettings: UserAppSettings) => {
+    setSettings(newSettings);
+    saveSettings(newSettings);
+    applySettingsToDOM(newSettings);
+  };
+
+  const handleResetSettings = () => {
+    setSettings(DEFAULT_SETTINGS);
+    saveSettings(DEFAULT_SETTINGS);
+    applySettingsToDOM(DEFAULT_SETTINGS);
+  };
 
   // Filter history when search query changes
   useEffect(() => {
@@ -91,7 +128,7 @@ export function App() {
     try {
       const envelope = await inspectHost(rawTarget);
       setCurrentInspection(envelope);
-      setHostInput(envelope.host);
+      setHostInput(""); // Clear search bar so next URL can be immediately inspected
       setActiveTab("overview");
       setActiveNav("inspect");
       await refreshHistory(searchQuery);
@@ -108,7 +145,7 @@ export function App() {
     try {
       const detail = await getInspectionDetail(item.id);
       setCurrentInspection(detail);
-      setHostInput(detail.host);
+      setHostInput(""); // Clear search bar for next inspection
       setActiveNav("inspect");
     } catch (err: any) {
       setCurrentInspection(null);
@@ -130,8 +167,14 @@ export function App() {
     }
   };
 
-  const handleClearAllHistory = () => {
-    setShowClearConfirmModal(true);
+  const handleClearAllHistory = async () => {
+    try {
+      await clearHistory();
+      setHistory([]);
+      setShowClearConfirmModal(false);
+    } catch (err: any) {
+      console.error("Failed to clear history:", err);
+    }
   };
 
   const executeClearAllHistory = async () => {
@@ -177,50 +220,59 @@ export function App() {
   const isTrusted = currentInspection?.data.verification?.trusted ?? false;
 
   return (
-    <div className="app-container">
-      {/* 1. Left Nav Rail */}
-      <NavRail
-        activeNav={activeNav}
-        onInspectClick={handleInspectRailClick}
-        onHistoryClick={handleHistoryRailClick}
+    <div className={`app-container ${settings.showFloatingDock ? "has-mac-dock" : ""}`}>
+      {/* 1. Middle History Column (Sidebar) */}
+      <HistoryPane
+        isOpen={isHistoryOpen}
+        history={history}
+        selectedId={currentInspection?.id || null}
+        searchQuery={searchQuery}
+        dateFormat={settings.dateFormat}
+        onSearchChange={setSearchQuery}
+        onSelectInspection={handleSelectHistoryItem}
+        onDeleteInspection={handleDeleteHistoryItem}
+        onClearHistory={handleClearAllHistory}
+        onClose={() => {
+          setIsHistoryOpen(false);
+          setActiveNav("inspect");
+        }}
       />
-
-      {/* 2. Middle History Column */}
-      {isHistoryOpen && (
-        <HistoryPane
-          history={history}
-          selectedId={currentInspection?.id || null}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          onSelectInspection={handleSelectHistoryItem}
-          onDeleteInspection={handleDeleteHistoryItem}
-          onClearHistory={handleClearAllHistory}
-          onClose={() => {
-            setIsHistoryOpen(false);
-            setActiveNav("inspect");
-          }}
-        />
-      )}
 
       {/* 3. Main Workspace */}
       <div className="main-workspace">
         {/* Top Header Inspection Bar */}
         <div className="top-inspection-bar">
           <div className="top-bar-left">
-            {!isHistoryOpen && (
-              <button
-                type="button"
-                className="sidebar-toggle-btn"
-                onClick={() => {
-                  setIsHistoryOpen(true);
-                  setActiveNav("history");
-                }}
-                title="Open side panel"
-                aria-label="Open side panel"
-              >
-                <PanelLeftOpen size={15} />
-              </button>
-            )}
+            <button
+              type="button"
+              className={`sidebar-toggle-btn ${!isHistoryOpen ? "is-visible" : "is-hidden"}`}
+              onClick={() => {
+                setIsHistoryOpen(true);
+                setActiveNav("history");
+              }}
+              title="Open side panel"
+              aria-label="Open side panel"
+              tabIndex={!isHistoryOpen ? 0 : -1}
+            >
+              <PanelLeftOpen size={15} />
+            </button>
+
+            {/* Home / Return to Main Search Screen Button */}
+            <button
+              type="button"
+              className={`top-bar-home-btn ${currentInspection ? "is-visible" : "is-hidden"}`}
+              onClick={() => {
+                setCurrentInspection(null);
+                setHostInput("");
+                setActiveNav("inspect");
+              }}
+              title="Return to Main Search Screen"
+              aria-label="Home"
+              tabIndex={currentInspection ? 0 : -1}
+            >
+              <Home size={14} color="var(--blue-primary)" style={{ flexShrink: 0 }} />
+              <span>Home</span>
+            </button>
           </div>
 
           <div className="top-bar-center">
@@ -235,7 +287,7 @@ export function App() {
                 <input
                   type="text"
                   className="host-input"
-                  placeholder="Enter domain or IP (e.g. example.com, github.com)..."
+                  placeholder={currentInspection ? `Inspect another domain (currently ${currentInspection.host})...` : "Enter domain or IP (e.g. example.com, github.com)..."}
                   value={hostInput}
                   onChange={(e) => setHostInput(e.target.value)}
                   disabled={isInspecting}
@@ -286,6 +338,27 @@ export function App() {
                   : "Server Status: Checking..."}
               </span>
             </div>
+
+            {/* Quick Settings Shortcut button in top bar */}
+            <button
+              type="button"
+              className="icon-btn-subtle"
+              onClick={() => setIsSettingsOpen(true)}
+              title="Preferences & Settings"
+              aria-label="Settings"
+              style={{
+                border: "1px solid var(--border-subtle)",
+                borderRadius: "8px",
+                padding: "6px 8px",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
+              }}
+            >
+              <Cpu size={14} style={{ display: "none" }} />
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -294,31 +367,8 @@ export function App() {
           <div className="target-summary-header">
             <div className="target-info-col">
               <div className="target-host-title">
-                <Globe size={22} color="#38bdf8" />
+                <Globe size={22} color="#e2e8f0" />
                 <span>{currentInspection.host}</span>
-                {currentInspection.metadata.x_cache && (
-                  <span className="badge-tag cache-hit" style={{ fontSize: "11px" }}>
-                    X-Cache: {currentInspection.metadata.x_cache}
-                  </span>
-                )}
-              </div>
-
-              <div className="target-subinfo">
-                <span className="subinfo-item">
-                  <strong>Port:</strong> {currentInspection.data.target?.port || 443}
-                </span>
-                <span className="subinfo-item">
-                  <strong>Remote:</strong> {currentInspection.data.connection?.remote_address || "N/A"}
-                </span>
-                <span className="subinfo-item">
-                  <strong>Connect:</strong>{" "}
-                  {currentInspection.data.connection?.connect_time_ms != null
-                    ? `${currentInspection.data.connection.connect_time_ms.toFixed(1)} ms`
-                    : "N/A"}
-                </span>
-                <span className="subinfo-item">
-                  <strong>Protocol:</strong> {currentInspection.data.tls?.negotiated?.protocol || "N/A"}
-                </span>
               </div>
             </div>
 
@@ -427,7 +477,10 @@ export function App() {
                 <HeadersTab metadata={currentInspection.metadata} />
               )}
               {activeTab === "json" && (
-                <RawJsonTab rawJson={currentInspection.raw_json} />
+                <RawJsonTab
+                  rawJson={currentInspection.raw_json}
+                  syntaxHighlighting={settings.jsonSyntaxHighlighting}
+                />
               )}
             </>
           ) : (
@@ -439,10 +492,6 @@ export function App() {
 
               <div>
                 <h1 className="welcome-title">TLS Engine Desktop</h1>
-                <p className="welcome-sub" style={{ marginTop: 8 }}>
-                  Enter any hostname or domain to inspect its TLS negotiated parameters, cipher suites,
-                  certificate chain validity, fingerprints, and transport metadata.
-                </p>
               </div>
 
               {/* Centered Hero Search Bar */}
@@ -508,6 +557,17 @@ export function App() {
         </div>
       </div>
 
+      {/* macOS Centered Floating Dock (Home Taskbar) */}
+      {settings.showFloatingDock && (
+        <MacDock
+          activeNav={activeNav}
+          isHistoryOpen={isHistoryOpen}
+          onInspectClick={handleInspectRailClick}
+          onHistoryClick={handleHistoryRailClick}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+        />
+      )}
+
       {/* Clear All Confirmation Modal */}
       <ConfirmModal
         isOpen={showClearConfirmModal}
@@ -517,6 +577,15 @@ export function App() {
         cancelText="Cancel"
         onConfirm={executeClearAllHistory}
         onCancel={() => setShowClearConfirmModal(false)}
+      />
+
+      {/* Appearance & Customization Settings Modal */}
+      <SettingsModal
+        isOpen={isSettingsOpen}
+        settings={settings}
+        onUpdateSettings={handleUpdateSettings}
+        onResetSettings={handleResetSettings}
+        onClose={() => setIsSettingsOpen(false)}
       />
     </div>
   );

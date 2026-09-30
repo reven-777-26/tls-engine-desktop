@@ -226,13 +226,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
           <span>HTTP Transport & Cache Diagnostics</span>
         </div>
 
-        <div className="grid-3">
-          <div className="metric-row">
-            <span className="metric-label">X-Cache Status</span>
-            <span className="metric-value" style={{ color: metadata.x_cache === "HIT" ? "#38bdf8" : "#94a3b8" }}>
-              {metadata.x_cache || "MISS / NOT_REPORTED"}
-            </span>
-          </div>
+        <div className="grid-2">
 
           <div className="metric-row">
             <span className="metric-label">Edge Server</span>

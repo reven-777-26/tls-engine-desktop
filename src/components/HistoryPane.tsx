@@ -1,11 +1,15 @@
 import React from "react";
 import { HistoryItemSummary } from "../types";
-import { Search, Trash2, Inbox, ShieldCheck, AlertTriangle, PanelLeftClose } from "lucide-react";
+import { Search, Inbox, ShieldCheck, AlertTriangle, PanelLeftClose } from "lucide-react";
+import { RareDeleteButton } from "./RareDeleteButton";
+import { DateFormatType, formatCustomDate } from "../settings";
 
 interface HistoryPaneProps {
+  isOpen?: boolean;
   history: HistoryItemSummary[];
   selectedId: number | null;
   searchQuery: string;
+  dateFormat: DateFormatType;
   onSearchChange: (q: string) => void;
   onSelectInspection: (item: HistoryItemSummary) => void;
   onDeleteInspection: (e: React.MouseEvent, id: number) => void;
@@ -14,9 +18,11 @@ interface HistoryPaneProps {
 }
 
 export const HistoryPane: React.FC<HistoryPaneProps> = ({
+  isOpen = true,
   history,
   selectedId,
   searchQuery,
+  dateFormat,
   onSearchChange,
   onSelectInspection,
   onDeleteInspection,
@@ -24,37 +30,12 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
   onClose,
 }) => {
   const formatTime = (isoString: string) => {
-    try {
-      const date = new Date(isoString);
-      const now = new Date();
-      const isToday =
-        date.getFullYear() === now.getFullYear() &&
-        date.getMonth() === now.getMonth() &&
-        date.getDate() === now.getDate();
-
-      const yesterday = new Date(now);
-      yesterday.setDate(now.getDate() - 1);
-      const isYesterday =
-        date.getFullYear() === yesterday.getFullYear() &&
-        date.getMonth() === yesterday.getMonth() &&
-        date.getDate() === yesterday.getDate();
-
-      const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-      if (isToday) {
-        return `Today ${timeStr}`;
-      }
-      if (isYesterday) {
-        return `Yesterday ${timeStr}`;
-      }
-      const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-      return `${monthNames[date.getMonth()]} ${date.getDate()} ${timeStr}`;
-    } catch {
-      return isoString;
-    }
+    return formatCustomDate(isoString, dateFormat);
   };
 
   return (
-    <div className="history-pane">
+    <aside className={`history-pane ${isOpen ? "is-open" : "is-collapsed"}`} aria-hidden={!isOpen}>
+      <div className="history-pane-inner">
       <div className="history-header">
         <div className="history-title">
           <Inbox size={18} color="#38bdf8" />
@@ -63,14 +44,10 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
 
         <div className="history-actions">
           {history.length > 0 && (
-            <button
-              className="clear-all-box-btn"
-              onClick={onClearHistory}
+            <RareDeleteButton
+              onConfirm={onClearHistory}
               title="Clear all inspection history"
-            >
-              <Trash2 size={12} />
-              <span>Clear all</span>
-            </button>
+            />
           )}
 
           <button
@@ -140,12 +117,6 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
                     {item.tls_version && (
                       <span className="badge-tag">{item.tls_version}</span>
                     )}
-
-                    {item.x_cache && (
-                      <span className="badge-tag cache-hit">
-                        {item.x_cache}
-                      </span>
-                    )}
                   </div>
 
                   <button
@@ -155,7 +126,19 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
                     title="Delete from history"
                     aria-label="Delete entry"
                   >
-                    <Trash2 size={12} />
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18 M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                    </svg>
                   </button>
                 </div>
               </div>
@@ -163,6 +146,7 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
           })
         )}
       </div>
-    </div>
+      </div>
+    </aside>
   );
 };

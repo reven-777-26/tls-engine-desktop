@@ -89,9 +89,9 @@ export const ProtocolsTab: React.FC<ProtocolsTabProps> = ({ envelope }) => {
                       </span>
                     )}
                   </td>
-                  <td style={{ fontFamily: "monospace", fontSize: "12px" }}>{cipher}</td>
-                  <td style={{ fontFamily: "monospace", fontSize: "12px" }}>{bits}</td>
-                  <td style={{ fontFamily: "monospace", fontSize: "12px" }}>{duration}</td>
+                  <td style={{ fontSize: "12px" }}>{cipher}</td>
+                  <td style={{ fontSize: "12px" }}>{bits}</td>
+                  <td style={{ fontSize: "12px" }}>{duration}</td>
                 </tr>
               );
             })}

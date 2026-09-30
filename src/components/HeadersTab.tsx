@@ -15,18 +15,6 @@ export const HeadersTab: React.FC<HeadersTabProps> = ({ metadata }) => {
           <span>HTTP Transport & Response Headers</span>
         </div>
 
-        <div className="metric-row">
-          <span className="metric-label">X-Cache Header</span>
-          <span
-            className="metric-value"
-            style={{
-              color: metadata.x_cache === "HIT" ? "#38bdf8" : "#94a3b8",
-              fontWeight: 700,
-            }}
-          >
-            {metadata.x_cache || "NOT_PRESENT"}
-          </span>
-        </div>
 
         <div className="metric-row">
           <span className="metric-label">HTTP Status Code</span>

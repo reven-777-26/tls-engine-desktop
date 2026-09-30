@@ -3,9 +3,67 @@ import { Copy, Check, Search, X, ChevronUp, ChevronDown } from "lucide-react";
 
 interface RawJsonTabProps {
   rawJson: string;
+  syntaxHighlighting?: boolean;
 }
 
-export const RawJsonTab: React.FC<RawJsonTabProps> = ({ rawJson }) => {
+interface JsonToken {
+  type: "key" | "string" | "number" | "boolean" | "null" | "punctuation" | "text";
+  value: string;
+}
+
+// Tokenize a line of JSON into semantic tokens for syntax coloring
+function tokenizeJsonLine(line: string): JsonToken[] {
+  const tokens: JsonToken[] = [];
+  const regex = /("(?:\\.|[^"\\])*")(\s*:)?|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)\b|\b(true|false)\b|\b(null)\b|([{}[\],:])|([^"0-9a-zA-Z{}[\],:]+)/g;
+  let match: RegExpExecArray | null;
+  let lastIndex = 0;
+
+  while ((match = regex.exec(line)) !== null) {
+    if (match.index > lastIndex) {
+      tokens.push({
+        type: "text",
+        value: line.substring(lastIndex, match.index),
+      });
+    }
+
+    const [full, str, colonAfter, num, bool, nil, punct] = match;
+
+    if (str !== undefined) {
+      if (colonAfter) {
+        tokens.push({ type: "key", value: str });
+        tokens.push({ type: "punctuation", value: colonAfter });
+      } else {
+        tokens.push({ type: "string", value: str });
+      }
+    } else if (num !== undefined) {
+      tokens.push({ type: "number", value: num });
+    } else if (bool !== undefined) {
+      tokens.push({ type: "boolean", value: bool });
+    } else if (nil !== undefined) {
+      tokens.push({ type: "null", value: nil });
+    } else if (punct !== undefined) {
+      tokens.push({ type: "punctuation", value: punct });
+    } else {
+      tokens.push({ type: "text", value: full });
+    }
+
+    lastIndex = regex.lastIndex;
+  }
+
+  if (lastIndex < line.length) {
+    tokens.push({
+      type: "text",
+      value: line.substring(lastIndex),
+    });
+  }
+
+  return tokens;
+}
+
+export const RawJsonTab: React.FC<RawJsonTabProps> = ({
+  rawJson,
+  syntaxHighlighting = true,
+}) => {
   const [copied, setCopied] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentMatchIdx, setCurrentMatchIdx] = useState(0);
@@ -120,8 +178,40 @@ export const RawJsonTab: React.FC<RawJsonTabProps> = ({ rawJson }) => {
   // Track match counter during render pass to highlight active match
   let matchCounter = -1;
 
+  // Helper to render text with search match marks inside a token
+  const renderTextWithMatches = (text: string, keyPrefix: string, tokenType?: string) => {
+    if (!escapedQuery) {
+      if (tokenType && tokenType !== "text" && syntaxHighlighting) {
+        return <span className={`token-${tokenType}`}>{text}</span>;
+      }
+      return text;
+    }
+
+    const parts = text.split(new RegExp(`(${escapedQuery})`, "gi"));
+    return (
+      <span className={syntaxHighlighting && tokenType && tokenType !== "text" ? `token-${tokenType}` : undefined}>
+        {parts.map((part, pIdx) => {
+          if (part.toLowerCase() === trimmedQuery.toLowerCase()) {
+            matchCounter++;
+            const isCurrent = matchCounter === currentMatchIdx;
+            return (
+              <mark
+                key={`${keyPrefix}-${pIdx}`}
+                ref={isCurrent ? activeMatchRef : undefined}
+                className={`json-search-match ${isCurrent ? "current" : ""}`}
+              >
+                {part}
+              </mark>
+            );
+          }
+          return <React.Fragment key={`${keyPrefix}-${pIdx}`}>{part}</React.Fragment>;
+        })}
+      </span>
+    );
+  };
+
   return (
-    <div className="json-tab-container">
+    <div className={`json-tab-container ${syntaxHighlighting ? "syntax-on" : "syntax-off"}`}>
       {/* Search & Actions Toolbar */}
       <div className="json-toolbar">
         <div className="json-search-wrap">
@@ -191,29 +281,20 @@ export const RawJsonTab: React.FC<RawJsonTabProps> = ({ rawJson }) => {
         </button>
       </div>
 
-      {/* JSON Code Viewer with Line Numbers and Match Highlights */}
+      {/* JSON Code Viewer with Line Numbers and Multi-tone Syntax Highlighting */}
       <div className="json-viewer-body" ref={viewerBodyRef}>
         {lines.map((line, lineIdx) => {
-          let lineContent: React.ReactNode = line;
+          let lineContent: React.ReactNode;
 
-          if (escapedQuery) {
-            const parts = line.split(new RegExp(`(${escapedQuery})`, "gi"));
-            lineContent = parts.map((part, pIdx) => {
-              if (part.toLowerCase() === trimmedQuery.toLowerCase()) {
-                matchCounter++;
-                const isCurrent = matchCounter === currentMatchIdx;
-                return (
-                  <mark
-                    key={pIdx}
-                    ref={isCurrent ? activeMatchRef : undefined}
-                    className={`json-search-match ${isCurrent ? "current" : ""}`}
-                  >
-                    {part}
-                  </mark>
-                );
-              }
-              return <React.Fragment key={pIdx}>{part}</React.Fragment>;
-            });
+          if (syntaxHighlighting) {
+            const tokens = tokenizeJsonLine(line);
+            lineContent = tokens.map((token, tIdx) => (
+              <React.Fragment key={tIdx}>
+                {renderTextWithMatches(token.value, `l${lineIdx}-t${tIdx}`, token.type)}
+              </React.Fragment>
+            ));
+          } else {
+            lineContent = renderTextWithMatches(line, `l${lineIdx}`);
           }
 
           return (

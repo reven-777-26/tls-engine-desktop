@@ -3,18 +3,21 @@ import {
   Search,
   History,
   ShieldCheck,
+  Settings,
 } from "lucide-react";
 
 interface NavRailProps {
   activeNav: string;
   onInspectClick: () => void;
   onHistoryClick: () => void;
+  onSettingsClick: () => void;
 }
 
 export const NavRail: React.FC<NavRailProps> = ({
   activeNav,
   onInspectClick,
   onHistoryClick,
+  onSettingsClick,
 }) => {
   return (
     <div className="nav-rail">
@@ -39,6 +42,17 @@ export const NavRail: React.FC<NavRailProps> = ({
         >
           <History size={19} />
           <span>History</span>
+        </button>
+      </div>
+
+      <div className="rail-bottom">
+        <button
+          className="rail-btn"
+          onClick={onSettingsClick}
+          title="Appearance & Preferences (Fonts, Date Format, Theme)"
+        >
+          <Settings size={20} />
+          <span>Settings</span>
         </button>
       </div>
     </div>
