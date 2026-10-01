@@ -492,14 +492,22 @@ body, html, #root {
 .search-box-wrap {
   padding: 8px 12px;
   border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.history-search-input-container {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 1;
+  min-width: 0;
 }
 
-.search-icon {
+.history-search-input-container .search-icon {
   position: absolute;
-  left: 22px;
+  left: 10px;
   color: var(--text-muted);
   pointer-events: none;
 }
@@ -509,7 +517,7 @@ body, html, #root {
   background-color: var(--bg-input);
   border: 1px solid var(--border-subtle);
   border-radius: 6px;
-  padding: 6px 10px 6px 28px;
+  padding: 6px 10px 6px 30px;
   color: var(--text-primary);
   font-size: 12px;
   outline: none;
@@ -534,18 +542,17 @@ body, html, #root {
   padding: 10px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   cursor: pointer;
-  transition: transform 0.22s var(--ease-apple-spring), background-color 0.2s var(--ease-apple-fluid), border-color 0.2s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
   width: 100%;
   box-sizing: border-box;
 }
 
 .history-item:hover {
   background-color: var(--bg-card-hover);
-  transform: translateX(2px);
 }
 
 .history-item:active {
-  transform: scale(0.985);
+  background-color: var(--bg-card-hover);
 }
 
 .history-item.selected {
@@ -631,14 +638,30 @@ body, html, #root {
 .badge-tag {
   display: inline-flex;
   align-items: center;
-  padding: 1.5px 6px;
+  justify-content: center;
+  gap: 3.5px;
+  height: 20px;
+  box-sizing: border-box;
+  padding: 0 6px;
   border-radius: 4px;
   font-size: 10px;
   font-weight: 500;
+  line-height: 1;
   background-color: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-subtle);
   color: var(--text-secondary);
   white-space: nowrap;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+.badge-tag span {
+  display: inline-block;
+  line-height: 1;
+}
+
+.badge-tag svg {
+  display: block;
   flex-shrink: 0;
 }
 
@@ -669,7 +692,7 @@ body, html, #root {
   margin: 0;
   margin-left: auto;
   background: #242424;
-  border-radius: 6px;
+  border-radius: 50%;
   color: #9ca3af;
   border: 1px solid #333333;
   cursor: pointer;
@@ -1146,14 +1169,13 @@ body, html, #root {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  transition: transform 0.28s var(--ease-apple-spring), border-color 0.24s var(--ease-apple-fluid), box-shadow 0.28s var(--ease-apple-spring);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .section-card:hover {
   border-color: rgba(255, 255, 255, 0.12);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .card-title {
@@ -1192,6 +1214,8 @@ body, html, #root {
   text-overflow: ellipsis;
   white-space: nowrap;
   letter-spacing: -0.01em;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* Certificate Chain Visualizer */
@@ -1305,20 +1329,53 @@ body, html, #root {
   font-weight: 600;
 }
 
+.probes-table th:nth-child(2),
+.probes-table td:nth-child(2) {
+  text-align: center;
+  width: 130px;
+}
+
 .probes-table td {
   padding: 12px 14px;
   border-bottom: 1px solid rgba(34, 48, 58, 0.4);
   color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.probes-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 92px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 600;
+  border: 1px solid transparent;
+  user-select: none;
+}
+
+.probes-badge.supported {
+  color: #34d399;
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.probes-badge.disabled {
+  color: #94a3b8;
+  background-color: rgba(255, 255, 255, 0.04);
+  border-color: var(--border-subtle);
 }
 
 /* Raw JSON Viewer & Search */
 .json-tab-container {
   display: flex;
   flex-direction: column;
-  background-color: #0d1216;
+  background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .json-toolbar {
@@ -1326,26 +1383,31 @@ body, html, #root {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 8px 12px;
-  background-color: #12181f;
+  padding: 10px 14px;
+  background-color: #171719;
   border-bottom: 1px solid var(--border-subtle);
-  flex-wrap: wrap;
 }
 
 .json-search-wrap {
   display: flex;
   align-items: center;
   gap: 8px;
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-subtle);
-  border-radius: 6px;
-  padding: 4px 10px;
-  flex: 1 1 300px;
+  background-color: #202024;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 6px 12px;
+  flex: 1 1 320px;
   max-width: 440px;
-  transition: all 0.15s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.json-search-wrap:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background-color: #242429;
 }
 
 .json-search-wrap:focus-within {
+  background-color: #202024;
   border-color: var(--blue-primary);
   box-shadow: 0 0 0 2px var(--blue-dim);
 }
@@ -1355,12 +1417,16 @@ body, html, #root {
   flex-shrink: 0;
 }
 
+.json-search-wrap:focus-within .json-search-icon {
+  color: var(--blue-primary);
+}
+
 .json-search-input {
   background: transparent;
   border: none;
   outline: none;
   color: var(--text-primary);
-  font-size: 12.5px;
+  font-size: 13px;
   font-family: inherit;
   width: 100%;
 }
@@ -1369,36 +1435,55 @@ body, html, #root {
   color: var(--text-muted);
 }
 
-.json-match-count {
-  font-size: 11px;
+.json-search-shortcut-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10.5px;
+  font-weight: 600;
   color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 1px 5px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.json-match-count {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--blue-primary);
+  background: var(--blue-dim);
+  border: 1px solid var(--blue-border);
+  border-radius: 10px;
   white-space: nowrap;
   user-select: none;
-  padding: 0 4px;
+  padding: 1px 8px;
 }
 
 .json-nav-btns {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .json-nav-btn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-muted);
   cursor: pointer;
   padding: 3px;
-  border-radius: 4px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
 }
 
 .json-nav-btn:hover:not(:disabled) {
-  background-color: var(--bg-card-hover);
-  color: var(--blue-primary);
+  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--text-primary);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .json-nav-btn:disabled {
@@ -1408,32 +1493,33 @@ body, html, #root {
 
 .json-clear-btn {
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   color: var(--text-muted);
   cursor: pointer;
   padding: 3px;
-  border-radius: 4px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.12s ease;
+  transition: all 0.15s ease;
 }
 
 .json-clear-btn:hover {
-  background-color: var(--bg-card-hover);
-  color: var(--status-danger);
+  background-color: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #ef4444;
 }
 
 .json-copy-btn {
-  background-color: #1a252d;
-  color: var(--blue-primary);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--text-primary);
   border: 1px solid var(--border-subtle);
-  padding: 5px 12px;
-  border-radius: 6px;
+  padding: 6px 14px;
+  border-radius: 7px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   font-size: 12px;
   font-weight: 500;
   transition: all 0.15s ease;
@@ -1442,8 +1528,9 @@ body, html, #root {
 }
 
 .json-copy-btn:hover {
-  background-color: #22313b;
-  border-color: var(--blue-primary);
+  background-color: var(--bg-card-hover);
+  border-color: var(--blue-border);
+  color: var(--blue-primary);
 }
 
 .json-viewer-body {
@@ -1454,6 +1541,8 @@ body, html, #root {
   font-size: 12.5px;
   line-height: 1.55;
   color: #bae6fd;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 /* Multi-tone Syntax Highlighting */
@@ -1496,6 +1585,7 @@ body, html, #root {
 
 .json-line-num {
   user-select: none;
+  -webkit-user-select: none;
   text-align: right;
   padding-right: 16px;
   color: var(--text-muted);
@@ -1503,10 +1593,13 @@ body, html, #root {
   width: 44px;
   flex-shrink: 0;
   font-size: 11.5px;
+  pointer-events: none;
 }
 
 .json-line-content {
   flex: 1;
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .json-search-match {
@@ -2361,4 +2454,120 @@ body, html, #root {
   .settings-modal-footer {
     padding: 10px 14px;
   }
+}
+
+/* =========================================================
+   Keyboard Shortcuts Modal Styling
+   ========================================================= */
+.shortcuts-info-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.shortcuts-info-banner strong {
+  color: var(--text-primary);
+}
+
+.shortcuts-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcut-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: var(--bg-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.shortcut-row-item:hover {
+  background-color: var(--bg-card-hover);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.shortcut-meta-col {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.shortcut-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.shortcut-desc {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.shortcut-key-col {
+  flex-shrink: 0;
+}
+
+.shortcut-key-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  outline: none;
+}
+
+.shortcut-kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 26px;
+  padding: 0 8px;
+  font-family: inherit;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: #242427;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+  transition: all 0.15s ease;
+}
+
+.shortcut-key-btn:hover .shortcut-kbd {
+  border-color: var(--blue-primary);
+  color: var(--blue-primary);
+  background: rgba(56, 189, 248, 0.1);
+}
+
+.shortcut-key-btn.is-recording .recording-text {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px dashed #ef4444;
+  color: #ef4444;
+  border-radius: 6px;
+  animation: pulseRecording 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseRecording {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 }

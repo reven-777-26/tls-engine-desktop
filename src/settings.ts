@@ -218,33 +218,34 @@ export function formatCustomDate(isoString: string, format: DateFormatType): str
     const date = new Date(isoString);
     if (isNaN(date.getTime())) return isoString;
 
-    const timeStr = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+    const time24Str = date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+    const time12Str = date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: true });
 
     if (format === "iso") {
       const y = date.getFullYear();
       const m = String(date.getMonth() + 1).padStart(2, "0");
       const d = String(date.getDate()).padStart(2, "0");
-      return `${y}-${m}-${d} ${timeStr}`;
+      return `${y}-${m}-${d} ${time24Str}`;
     }
 
     if (format === "us") {
       const m = String(date.getMonth() + 1).padStart(2, "0");
       const d = String(date.getDate()).padStart(2, "0");
       const y = date.getFullYear();
-      return `${m}/${d}/${y} ${timeStr}`;
+      return `${m}/${d}/${y} ${time12Str}`;
     }
 
     if (format === "eu") {
       const d = String(date.getDate()).padStart(2, "0");
       const m = String(date.getMonth() + 1).padStart(2, "0");
       const y = date.getFullYear();
-      return `${d}.${m}.${y} ${timeStr}`;
+      return `${d}/${m}/${y} ${time12Str}`;
     }
 
     if (format === "hh_yy_dd") {
       const d = String(date.getDate()).padStart(2, "0");
       const yy = String(date.getFullYear()).slice(-2);
-      return `${timeStr} ${yy}/${d}`;
+      return `${time24Str} ${yy}/${d}`;
     }
 
     // Default "relative"
@@ -261,11 +262,11 @@ export function formatCustomDate(isoString: string, format: DateFormatType): str
       date.getMonth() === yesterday.getMonth() &&
       date.getDate() === yesterday.getDate();
 
-    if (isToday) return `Today ${timeStr}`;
-    if (isYesterday) return `Yesterday ${timeStr}`;
+    if (isToday) return `Today ${time24Str}`;
+    if (isYesterday) return `Yesterday ${time24Str}`;
 
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-    return `${monthNames[date.getMonth()]} ${date.getDate()} ${timeStr}`;
+    return `${monthNames[date.getMonth()]} ${date.getDate()} ${time24Str}`;
   } catch {
     return isoString;
   }

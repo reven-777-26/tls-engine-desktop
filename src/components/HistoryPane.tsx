@@ -43,13 +43,6 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
         </div>
 
         <div className="history-actions">
-          {history.length > 0 && (
-            <RareDeleteButton
-              onConfirm={onClearHistory}
-              title="Clear all inspection history"
-            />
-          )}
-
           <button
             type="button"
             className="icon-btn-subtle"
@@ -63,14 +56,22 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
       </div>
 
       <div className="search-box-wrap">
-        <Search size={14} className="search-icon" />
-        <input
-          type="text"
-          className="history-search-input"
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-        />
+        <div className="history-search-input-container">
+          <Search size={14} className="search-icon" />
+          <input
+            type="text"
+            className="history-search-input"
+            placeholder="Search..."
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+          />
+        </div>
+        {history.length > 0 && (
+          <RareDeleteButton
+            onConfirm={onClearHistory}
+            title="Clear all"
+          />
+        )}
       </div>
 
       <div className="history-list">
@@ -104,18 +105,20 @@ export const HistoryPane: React.FC<HistoryPaneProps> = ({
                   <div className="history-item-meta">
                     {item.is_trusted ? (
                       <span className="badge-tag trusted" title="Trusted certificate chain">
-                        <ShieldCheck size={11} style={{ marginRight: 3 }} />
-                        Trusted
+                        <ShieldCheck size={11} />
+                        <span>Trusted</span>
                       </span>
                     ) : (
                       <span className="badge-tag untrusted" title="Certificate issue detected">
-                        <AlertTriangle size={11} style={{ marginRight: 3 }} />
-                        Issues
+                        <AlertTriangle size={11} />
+                        <span>Issues</span>
                       </span>
                     )}
 
                     {item.tls_version && (
-                      <span className="badge-tag">{item.tls_version}</span>
+                      <span className="badge-tag">
+                        <span>{item.tls_version}</span>
+                      </span>
                     )}
                   </div>
 

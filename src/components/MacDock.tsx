@@ -3,6 +3,7 @@ import {
   Search,
   History,
   Settings,
+  Keyboard,
 } from "lucide-react";
 
 interface MacDockProps {
@@ -11,6 +12,7 @@ interface MacDockProps {
   onInspectClick: () => void;
   onHistoryClick: () => void;
   onSettingsClick: () => void;
+  onShortcutsClick: () => void;
 }
 
 interface DockItem {
@@ -27,17 +29,11 @@ export const MacDock: React.FC<MacDockProps> = ({
   onInspectClick,
   onHistoryClick,
   onSettingsClick,
+  onShortcutsClick,
 }) => {
   const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
 
   const items: DockItem[] = [
-    {
-      id: "inspect",
-      label: "Inspect Host",
-      icon: <Search size={21} strokeWidth={2.2} />,
-      isActive: activeNav === "inspect" && !isHistoryOpen,
-      onClick: onInspectClick,
-    },
     {
       id: "history",
       label: "History & Scans",
@@ -46,11 +42,25 @@ export const MacDock: React.FC<MacDockProps> = ({
       onClick: onHistoryClick,
     },
     {
+      id: "inspect",
+      label: "Inspect Host",
+      icon: <Search size={21} strokeWidth={2.2} />,
+      isActive: activeNav === "inspect" && !isHistoryOpen,
+      onClick: onInspectClick,
+    },
+    {
       id: "settings",
-      label: "Preferences",
+      label: "Settings and Preferences",
       icon: <Settings size={21} strokeWidth={2.2} />,
       isActive: false,
       onClick: onSettingsClick,
+    },
+    {
+      id: "shortcuts",
+      label: "Keyboard Shortcuts",
+      icon: <Keyboard size={21} strokeWidth={2.2} />,
+      isActive: false,
+      onClick: onShortcutsClick,
     },
   ];
 

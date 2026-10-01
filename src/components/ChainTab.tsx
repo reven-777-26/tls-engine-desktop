@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { CertificateItem } from "../types";
+import { DateFormatType, formatCustomDate } from "../settings";
 import {
   ShieldCheck,
   Copy,
@@ -12,9 +13,10 @@ import {
 
 interface ChainTabProps {
   chain?: CertificateItem[];
+  dateFormat?: DateFormatType;
 }
 
-export const ChainTab: React.FC<ChainTabProps> = ({ chain = [] }) => {
+export const ChainTab: React.FC<ChainTabProps> = ({ chain = [], dateFormat = "relative" }) => {
   const [expandedPems, setExpandedPems] = useState<Record<number, boolean>>({});
   const [expandedSans, setExpandedSans] = useState<Record<number, boolean>>({});
   const [copiedFingerprint, setCopiedFingerprint] = useState<string | null>(null);
@@ -123,12 +125,12 @@ export const ChainTab: React.FC<ChainTabProps> = ({ chain = [] }) => {
               <div>
                 <div className="metric-row">
                   <span className="metric-label">Valid From</span>
-                  <span className="metric-value">{cert.validity?.from ? cert.validity.from.split("T")[0] : "N/A"}</span>
+                  <span className="metric-value">{cert.validity?.from ? formatCustomDate(cert.validity.from, dateFormat) : "N/A"}</span>
                 </div>
 
                 <div className="metric-row">
                   <span className="metric-label">Valid Until</span>
-                  <span className="metric-value">{cert.validity?.to ? cert.validity.to.split("T")[0] : "N/A"}</span>
+                  <span className="metric-value">{cert.validity?.to ? formatCustomDate(cert.validity.to, dateFormat) : "N/A"}</span>
                 </div>
 
                 <div className="metric-row">

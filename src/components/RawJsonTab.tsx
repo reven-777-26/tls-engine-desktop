@@ -156,13 +156,16 @@ export const RawJsonTab: React.FC<RawJsonTabProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" || e.key === "ArrowDown") {
       e.preventDefault();
-      if (e.shiftKey) {
+      if (e.key === "Enter" && e.shiftKey) {
         goToPrevMatch();
       } else {
         goToNextMatch();
       }
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      goToPrevMatch();
     } else if (e.key === "Escape") {
       e.preventDefault();
       handleClearSearch();
@@ -215,23 +218,29 @@ export const RawJsonTab: React.FC<RawJsonTabProps> = ({
       {/* Search & Actions Toolbar */}
       <div className="json-toolbar">
         <div className="json-search-wrap">
-          <Search size={14} className="json-search-icon" />
+          <Search size={15} className="json-search-icon" />
           <input
             ref={searchInputRef}
             type="text"
             className="json-search-input"
-            placeholder="Search JSON (keys, values)..."
+            placeholder="Search JSON payload (keys, strings, numbers)..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
             onKeyDown={handleKeyDown}
           />
+
+          {!trimmedQuery && (
+            <span className="json-search-shortcut-badge">
+              {typeof navigator !== "undefined" && navigator.platform.toUpperCase().indexOf("MAC") >= 0 ? "⌘F" : "Ctrl+F"}
+            </span>
+          )}
 
           {trimmedQuery && (
             <>
               <span className="json-match-count">
                 {totalMatches === 0
                   ? "0 matches"
-                  : `${currentMatchIdx + 1} of ${totalMatches}`}
+                  : `${currentMatchIdx + 1} / ${totalMatches}`}
               </span>
 
               <div className="json-nav-btns">

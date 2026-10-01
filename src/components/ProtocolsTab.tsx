@@ -65,27 +65,14 @@ export const ProtocolsTab: React.FC<ProtocolsTabProps> = ({ envelope }) => {
                   <td style={{ fontWeight: 600 }}>{protoKey}</td>
                   <td>
                     {isSupported ? (
-                      <span
-                        className="badge-tag"
-                        style={{
-                          color: "#34d399",
-                          borderColor: "rgba(16, 185, 129, 0.4)",
-                          backgroundColor: "rgba(16, 185, 129, 0.1)",
-                        }}
-                      >
-                        <CheckCircle2 size={12} style={{ marginRight: 4 }} />
-                        Supported
+                      <span className="probes-badge supported">
+                        <CheckCircle2 size={13} style={{ marginRight: 5, flexShrink: 0 }} />
+                        <span>Supported</span>
                       </span>
                     ) : (
-                      <span
-                        className="badge-tag"
-                        style={{
-                          color: "#94a3b8",
-                          borderColor: "var(--border-subtle)",
-                        }}
-                      >
-                        <XCircle size={12} style={{ marginRight: 4 }} />
-                        Disabled
+                      <span className="probes-badge disabled">
+                        <XCircle size={13} style={{ marginRight: 5, flexShrink: 0 }} />
+                        <span>Disabled</span>
                       </span>
                     )}
                   </td>

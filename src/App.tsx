@@ -9,6 +9,7 @@ import { HeadersTab } from "./components/HeadersTab";
 import { RawJsonTab } from "./components/RawJsonTab";
 import { ConfirmModal } from "./components/ConfirmModal";
 import { SettingsModal } from "./components/SettingsModal";
+import { ShortcutsModal } from "./components/ShortcutsModal";
 import {
   UserAppSettings,
   loadSettings,
@@ -16,6 +17,12 @@ import {
   applySettingsToDOM,
   DEFAULT_SETTINGS,
 } from "./settings";
+import {
+  loadUserShortcuts,
+  saveUserShortcuts,
+  matchesShortcut,
+  UserShortcutMap,
+} from "./shortcuts";
 import {
   inspectHost,
   checkHealth,
@@ -28,6 +35,7 @@ import { HealthStatus, HistoryItemSummary, InspectionEnvelope } from "./types";
 import {
   Search,
   Cpu,
+  Keyboard,
   ShieldCheck,
   AlertTriangle,
   Globe,
@@ -48,6 +56,8 @@ export function App() {
   const [activeTab, setActiveTab] = useState<"overview" | "chain" | "protocols" | "headers" | "json">("overview");
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
+  const [shortcuts, setShortcuts] = useState<UserShortcutMap>(() => loadUserShortcuts());
   const [settings, setSettings] = useState<UserAppSettings>(() => {
     const s = loadSettings();
     applySettingsToDOM(s);
@@ -65,6 +75,91 @@ export function App() {
   const [error, setError] = useState<string | null>(null);
 
   const [showClearConfirmModal, setShowClearConfirmModal] = useState(false);
+
+  const handleUpdateShortcuts = (newShortcuts: UserShortcutMap) => {
+    setShortcuts(newShortcuts);
+    saveUserShortcuts(newShortcuts);
+  };
+
+  // Global Keyboard Shortcuts listener for rapid navigation
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept typing in inputs or textareas, unless Mod key is pressed
+      const target = e.target as HTMLElement;
+      const isInput = target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA" || target.isContentEditable);
+
+      if (matchesShortcut(e, shortcuts.focus_search)) {
+        e.preventDefault();
+        const searchInput = document.querySelector(".host-input, .welcome-search-input") as HTMLInputElement | null;
+        searchInput?.focus();
+        searchInput?.select();
+        return;
+      }
+
+      if (matchesShortcut(e, shortcuts.toggle_history)) {
+        e.preventDefault();
+        setIsHistoryOpen((prev) => !prev);
+        return;
+      }
+
+      if (matchesShortcut(e, shortcuts.go_home)) {
+        e.preventDefault();
+        setCurrentInspection(null);
+        setHostInput("");
+        setActiveNav("inspect");
+        return;
+      }
+
+      if (matchesShortcut(e, shortcuts.open_shortcuts)) {
+        e.preventDefault();
+        setIsShortcutsOpen((prev) => !prev);
+        return;
+      }
+
+      if (matchesShortcut(e, shortcuts.open_settings)) {
+        e.preventDefault();
+        setIsSettingsOpen((prev) => !prev);
+        return;
+      }
+
+      // Tab navigation shortcuts (Mod+1 to Mod+5)
+      if (currentInspection && !isInput) {
+        if (matchesShortcut(e, shortcuts.tab_overview)) {
+          e.preventDefault();
+          setActiveTab("overview");
+        } else if (matchesShortcut(e, shortcuts.tab_chain)) {
+          e.preventDefault();
+          setActiveTab("chain");
+        } else if (matchesShortcut(e, shortcuts.tab_protocols)) {
+          e.preventDefault();
+          setActiveTab("protocols");
+        } else if (matchesShortcut(e, shortcuts.tab_headers)) {
+          e.preventDefault();
+          setActiveTab("headers");
+        } else if (matchesShortcut(e, shortcuts.tab_json)) {
+          e.preventDefault();
+          setActiveTab("json");
+        }
+      }
+
+      // If user presses Ctrl+F / Cmd+F while viewing an inspection
+      if (currentInspection && (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        if (activeTab !== "json") {
+          setActiveTab("json");
+        }
+        setTimeout(() => {
+          const jsonSearch = document.querySelector(".json-search-input") as HTMLInputElement | null;
+          jsonSearch?.focus();
+          jsonSearch?.select();
+        }, 50);
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [shortcuts, currentInspection]);
 
   // Initialize Apple-style gravitational smooth scroll and load initial data
   useEffect(() => {
@@ -96,6 +191,35 @@ export function App() {
   useEffect(() => {
     refreshHistory(searchQuery);
   }, [searchQuery]);
+
+  // Global Escape key listener: Close open modals or clear current inspection (close tabs)
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        if (isSettingsOpen) {
+          setIsSettingsOpen(false);
+          return;
+        }
+        if (isShortcutsOpen) {
+          setIsShortcutsOpen(false);
+          return;
+        }
+        if (showClearConfirmModal) {
+          setShowClearConfirmModal(false);
+          return;
+        }
+        if (currentInspection) {
+          setCurrentInspection(null);
+          setHostInput("");
+          setActiveNav("inspect");
+          return;
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, [isSettingsOpen, isShortcutsOpen, showClearConfirmModal, currentInspection]);
 
   const refreshHistory = async (query?: string) => {
     try {
@@ -266,8 +390,8 @@ export function App() {
                 setHostInput("");
                 setActiveNav("inspect");
               }}
-              title="Return to Main Search Screen"
-              aria-label="Home"
+              title="Return to Home"
+              aria-label="Return to Home"
               tabIndex={currentInspection ? 0 : -1}
             >
               <Home size={14} color="var(--blue-primary)" style={{ flexShrink: 0 }} />
@@ -287,7 +411,7 @@ export function App() {
                 <input
                   type="text"
                   className="host-input"
-                  placeholder={currentInspection ? `Inspect another domain (currently ${currentInspection.host})...` : "Enter domain or IP (e.g. example.com, github.com)..."}
+                  placeholder={`Inspect another host (e.g. ${currentInspection.host})...`}
                   value={hostInput}
                   onChange={(e) => setHostInput(e.target.value)}
                   disabled={isInspecting}
@@ -319,7 +443,7 @@ export function App() {
               className="health-pill"
               title={
                 isCheckingHealth
-                  ? "Checking server connectivity..."
+                  ? "Checking TLS Engine status..."
                   : health?.healthy
                   ? "Server Status: Online"
                   : "Server Status: Offline"
@@ -330,22 +454,39 @@ export function App() {
               />
               <span>
                 {isCheckingHealth
-                  ? "Server Status: Checking..."
+                  ? "Checking..."
                   : health
                   ? health.healthy
                     ? "Server Status: Online"
                     : "Server Status: Offline"
-                  : "Server Status: Checking..."}
+                  : "Checking..."}
               </span>
             </div>
+
+            {/* Keyboard Shortcuts Trigger button in top bar */}
+            <button
+              type="button"
+              className="icon-btn-subtle"
+              onClick={() => setIsShortcutsOpen(true)}
+              title="Keyboard Shortcuts (⌘/ or Ctrl+/)"
+              aria-label="Keyboard Shortcuts"
+              style={{
+                border: "1px solid var(--border-subtle)",
+                borderRadius: "8px",
+                padding: "6px 8px",
+                backgroundColor: "rgba(255, 255, 255, 0.04)",
+              }}
+            >
+              <Keyboard size={15} color="var(--text-secondary)" />
+            </button>
 
             {/* Quick Settings Shortcut button in top bar */}
             <button
               type="button"
               className="icon-btn-subtle"
               onClick={() => setIsSettingsOpen(true)}
-              title="Preferences & Settings"
-              aria-label="Settings"
+              title="Settings and Preferences (⌘, or Ctrl+,)"
+              aria-label="Settings and Preferences"
               style={{
                 border: "1px solid var(--border-subtle)",
                 borderRadius: "8px",
@@ -468,9 +609,11 @@ export function App() {
           {/* Active Inspection Tab Views */}
           {currentInspection ? (
             <>
-              {activeTab === "overview" && <OverviewTab envelope={currentInspection} />}
+              {activeTab === "overview" && (
+                <OverviewTab envelope={currentInspection} dateFormat={settings.dateFormat} />
+              )}
               {activeTab === "chain" && (
-                <ChainTab chain={currentInspection.data.certificates?.chain} />
+                <ChainTab chain={currentInspection.data.certificates?.chain} dateFormat={settings.dateFormat} />
               )}
               {activeTab === "protocols" && <ProtocolsTab envelope={currentInspection} />}
               {activeTab === "headers" && (
@@ -565,6 +708,7 @@ export function App() {
           onInspectClick={handleInspectRailClick}
           onHistoryClick={handleHistoryRailClick}
           onSettingsClick={() => setIsSettingsOpen(true)}
+          onShortcutsClick={() => setIsShortcutsOpen(true)}
         />
       )}
 
@@ -586,6 +730,14 @@ export function App() {
         onUpdateSettings={handleUpdateSettings}
         onResetSettings={handleResetSettings}
         onClose={() => setIsSettingsOpen(false)}
+      />
+
+      {/* Keyboard Shortcuts Customization Modal */}
+      <ShortcutsModal
+        isOpen={isShortcutsOpen}
+        shortcuts={shortcuts}
+        onUpdateShortcuts={handleUpdateShortcuts}
+        onClose={() => setIsShortcutsOpen(false)}
       />
     </div>
   );

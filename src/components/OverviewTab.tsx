@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { InspectionEnvelope } from "../types";
+import { DateFormatType, formatCustomDate } from "../settings";
 import {
   AlertTriangle,
   Server,
@@ -10,9 +11,10 @@ import {
 
 interface OverviewTabProps {
   envelope: InspectionEnvelope;
+  dateFormat?: DateFormatType;
 }
 
-export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
+export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope, dateFormat = "relative" }) => {
   const [showAllSans, setShowAllSans] = useState(false);
   const { data, metadata } = envelope;
   const isTrusted = data.verification?.trusted ?? false;
@@ -155,14 +157,14 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
               <div className="metric-row">
                 <span className="metric-label">Valid From</span>
                 <span className="metric-value">
-                  {leafCert.validity?.from ? leafCert.validity.from.split("T")[0] : "N/A"}
+                  {leafCert.validity?.from ? formatCustomDate(leafCert.validity.from, dateFormat) : "N/A"}
                 </span>
               </div>
 
               <div className="metric-row">
                 <span className="metric-label">Valid Until</span>
                 <span className="metric-value">
-                  {leafCert.validity?.to ? leafCert.validity.to.split("T")[0] : "N/A"}
+                  {leafCert.validity?.to ? formatCustomDate(leafCert.validity.to, dateFormat) : "N/A"}
                 </span>
               </div>
 
@@ -219,11 +221,11 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope }) => {
         </div>
       )}
 
-      {/* HTTP Metadata & Cache Summary Card */}
+      {/* HTTP Metadata Summary Card */}
       <div className="section-card">
         <div className="card-title">
           <Radio size={16} />
-          <span>HTTP Transport & Cache Diagnostics</span>
+          <span>HTTP Transport Diagnostics</span>
         </div>
 
         <div className="grid-2">
