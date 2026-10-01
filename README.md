@@ -1,7 +1,84 @@
+```text
 TLS Engine Desktop
 ==================
 
 A cross-platform desktop application built with Rust and Tauri v2 for inspecting TLS connections, certificate chains, cipher suites, and transport metadata via the Kroatenwerk TLS Engine service.
+
+
+Development
+===========
+
+The following instructions describe how to set up TLS Engine Desktop locally across Windows, macOS, and Debian-based Linux distributions.
+
+
+System packages (Linux / Debian / Ubuntu)
+-----------------------------------------
+Update the package index:
+
+sudo apt update
+
+Install build essentials and webkit dependencies required by Tauri:
+
+sudo apt install -y \
+  build-essential \
+  curl \
+  wget \
+  file \
+  libssl-dev \
+  libgtk-3-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev \
+  libjavascriptcoregtk-4.1-dev \
+  libwebkit2gtk-4.1-dev
+
+
+NodeJS & PNPM
+-------------
+Install NodeJS (v18+) and PNPM:
+
+node -v
+pnpm -v
+
+
+Project dependencies
+--------------------
+From the project directory, install the NodeJS dependencies:
+
+pnpm install
+
+
+Running the application
+-----------------------
+Start the desktop application in development mode:
+
+pnpm tauri dev
+
+To run the frontend dev server standalone in your browser:
+
+pnpm dev
+
+
+Building for production
+-----------------------
+Package the desktop application for your platform:
+
+pnpm tauri build
+
+
+Testing
+-------
+
+Run Rust unit tests:
+
+cd src-tauri
+cargo test
+
+This tests domain validation, URL stripping, SQLite CRUD operations, and HTTP metadata header extraction.
+
+
+Run frontend build check:
+
+pnpm build
 
 
 Architecture & Technical Decisions
@@ -41,82 +118,6 @@ Enforces standard TLS certificate verification via rustls-tls.
 The webview operates with zero filesystem, shell, or unrestricted network permissions exposed. Frontend communication is restricted to designated Tauri IPC commands.
 
 
-Development Setup
------------------
-
-Prerequisites
--------------
-Rust (rustc and cargo 1.78+)
-NodeJS (v18+)
-pnpm (or npm)
-
-
-System packages (Linux / Debian / Ubuntu)
------------------------------------------
-Update package index:
-
-php bin/console cache:clear
-
-Install build essentials and webkit dependencies required by Tauri:
-
-sudo apt install -y \
-  build-essential \
-  curl \
-  wget \
-  file \
-  libssl-dev \
-  libgtk-3-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev \
-  libjavascriptcoregtk-4.1-dev \
-  libwebkit2gtk-4.1-dev
-
-
-Project dependencies
---------------------
-From the project directory, install the NodeJS dependencies:
-
-pnpm install
-
-
-Running the application
------------------------
-Start the desktop application in development mode:
-
-pnpm tauri dev
-
-To run the frontend dev server standalone in your browser:
-
-pnpm dev
-
-
-Building for production
------------------------
-Package the desktop application for your platform:
-
-pnpm tauri build
-
-
-Testing
--------
-
-Run Rust unit tests
--------------------
-Execute the backend test suite:
-
-cd src-tauri
-cargo test
-
-This tests domain validation, URL stripping, SQLite CRUD operations, and HTTP metadata header extraction.
-
-
-Run frontend build check
-------------------------
-Verify TypeScript types and bundle build:
-
-pnpm build
-
-
 Project Structure
 -----------------
 
@@ -137,3 +138,4 @@ tls-engine-desktop/
     types.ts            - TypeScript definitions
     App.tsx             - Primary UI coordinator
     components/         - UI views, tabs, and modals
+```
