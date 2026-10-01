@@ -1,13 +1,14 @@
 TLS Engine Desktop
 ==================
 
-A cross-platform desktop application built with Rust and Tauri v2 for inspecting TLS connections, certificate chains, cipher suites, and transport metadata via the Kroatenwerk TLS Engine service.
+A cross-platform desktop application built with Rust and Tauri v2 for inspecting TLS connections, certificate chains, cipher suites, and transport metadata via api endpoint.
 
 
 Development
 ===========
 
-The following instructions describe how to set up TLS Engine Desktop locally across Windows, macOS, and Debian-based Linux distributions.
+The following instructions describe how to set up TLS Engine Desktop locally 
+across Windows, macOS, and Debian-based Linux distributions.
 
 
 System packages (Linux / Debian / Ubuntu)
@@ -86,24 +87,29 @@ Architecture & Technical Decisions
 Rust-First Separation of Concerns
 ---------------------------------
 All I/O, networking, data modeling, validation, and local storage are handled by the Rust backend.
-HTTP and TLS requests are executed via asynchronous reqwest in Rust. The webview does not perform arbitrary HTTP requests or unrestricted fetch calls.
+HTTP and TLS requests are executed via asynchronous reqwest in Rust.
+The webview does not perform arbitrary HTTP requests or unrestricted fetch calls.
 
 
 Header & Metadata Capture
 -------------------------
-The Kroatenwerk TLS service returns diagnostic metadata in HTTP response headers. The Rust client captures response headers prior to parsing the body, constructing an InspectionEnvelope that pairs transport metadata with diagnostic data.
+The Kroatenwerk TLS service returns diagnostic metadata in HTTP response headers.
+The Rust client captures response headers prior to parsing the body, constructing an
+InspectionEnvelope that pairs transport metadata with diagnostic data.
 
 
 Input Sanitization & Validation
 -------------------------------
-Raw user inputs (URL strings, hostname ports, extra whitespace) are normalized and validated against RFC 1123 / FQDN specifications in Rust before any network requests are dispatched.
+Raw user inputs (URL strings, hostname ports, extra whitespace) are normalized and
+validated against RFC 1123 / FQDN specifications in Rust before any network requests are dispatched.
 
 
 Local Persistence & Offline Replay
 ----------------------------------
 Uses rusqlite with bundled SQLite, compiling natively across macOS, Linux, and Windows without external library dependencies.
-History records store complete JSON payloads along with metadata and timestamps. When an entry is selected from history, it renders immediately from SQLite without re-querying the API.
-All database interactions use parameterized queries to eliminate SQL injection vulnerabilities.
+History records store complete JSON payloads along with metadata and timestamps. When an entry is selected from history,
+it renders immediately from SQLite without re-querying the API. All database interactions use parameterized queries to
+eliminate SQL injection vulnerabilities.
 
 
 Service Health Integration
@@ -114,7 +120,8 @@ Polls the GET /health endpoint to monitor backend availability. Features a live 
 Security Posture
 ----------------
 Enforces standard TLS certificate verification via rustls-tls.
-The webview operates with zero filesystem, shell, or unrestricted network permissions exposed. Frontend communication is restricted to designated Tauri IPC commands.
+The webview operates with zero filesystem, shell, or unrestricted network permissions exposed.
+Frontend communication is restricted to designated Tauri IPC commands.
 
 
 Project Structure
