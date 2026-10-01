@@ -1,35 +1,52 @@
 TLS Engine Desktop
 ==================
 
-A cross-platform desktop application built with Rust and Tauri v2 for inspecting TLS connections, certificate chains, cipher suites, and transport metadata via api endpoint.
+A cross-platform desktop application built with Rust and Tauri v2 for inspecting TLS connections, certificate chains, cipher suites, and transport metadata via the Kroatenwerk TLS Engine service.
 
 
-Development
-===========
+Development & Setup
+===================
 
-The following instructions describe how to set up TLS Engine Desktop locally 
-across Windows, macOS, and Debian-based Linux distributions.
+The following instructions describe how to set up and run TLS Engine Desktop locally across Windows, macOS, and Linux.
 
 
-System packages (Linux / Debian / Ubuntu)
------------------------------------------
-Update the package index:
+Windows Setup
+-------------
+Install Rust and Visual Studio C++ Build Tools:
+  1. Download Rustup from https://rustup.rs/ and run rustup-init.exe
+  2. Install Visual Studio Build Tools with "Desktop development with C++" workload
+  3. Verify installation in PowerShell:
+     rustc --version
+     cargo --version
 
-sudo apt update
 
-Install build essentials and webkit dependencies required by Tauri:
+macOS Setup
+-----------
+Install Xcode Command Line Tools and Rust:
+  1. Open Terminal and install Xcode command line tools:
+     xcode-select --install
+  2. Install Rust via Rustup:
+     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  3. Verify installation:
+     rustc --version
+     cargo --version
 
-sudo apt install -y \
-  build-essential \
-  curl \
-  wget \
-  file \
-  libssl-dev \
-  libgtk-3-dev \
-  libayatana-appindicator3-dev \
-  librsvg2-dev \
-  libjavascriptcoregtk-4.1-dev \
-  libwebkit2gtk-4.1-dev
+
+Linux Setup (Debian / Ubuntu / Mint)
+------------------------------------
+Update package index and install WebKitGTK build dependencies:
+  sudo apt update
+  sudo apt install -y \
+    build-essential \
+    curl \
+    wget \
+    file \
+    libssl-dev \
+    libgtk-3-dev \
+    libayatana-appindicator3-dev \
+    librsvg2-dev \
+    libjavascriptcoregtk-4.1-dev \
+    libwebkit2gtk-4.1-dev
 
 
 NodeJS & PNPM
@@ -58,11 +75,17 @@ To run the frontend dev server standalone in your browser:
 pnpm dev
 
 
-Building for production
------------------------
-Package the desktop application for your platform:
+Building for Production (Windows / macOS / Linux)
+-------------------------------------------------
+Package the desktop application for your host platform:
 
 pnpm tauri build
+
+Tauri automatically detects your operating system and compiles native installers:
+
+  • Windows: Generates .msi installer and .exe bundle in src-tauri/target/release/bundle/msi/
+  • macOS: Generates .dmg installer and .app bundle in src-tauri/target/release/bundle/dmg/
+  • Linux: Generates .AppImage standalone binary and .deb package in src-tauri/target/release/bundle/appimage/
 
 
 Testing
@@ -100,16 +123,14 @@ InspectionEnvelope that pairs transport metadata with diagnostic data.
 
 Input Sanitization & Validation
 -------------------------------
-Raw user inputs (URL strings, hostname ports, extra whitespace) are normalized and
-validated against RFC 1123 / FQDN specifications in Rust before any network requests are dispatched.
+Raw user inputs (URL strings, hostname ports, extra whitespace) are normalized and validated against RFC 1123 / FQDN specifications in Rust before any network requests are dispatched.
 
 
 Local Persistence & Offline Replay
 ----------------------------------
 Uses rusqlite with bundled SQLite, compiling natively across macOS, Linux, and Windows without external library dependencies.
-History records store complete JSON payloads along with metadata and timestamps. When an entry is selected from history,
-it renders immediately from SQLite without re-querying the API. All database interactions use parameterized queries to
-eliminate SQL injection vulnerabilities.
+History records store complete JSON payloads along with metadata and timestamps. When an entry is selected from history, it renders immediately from SQLite without re-querying the API.
+All database interactions use parameterized queries to eliminate SQL injection vulnerabilities.
 
 
 Service Health Integration
@@ -120,8 +141,7 @@ Polls the GET /health endpoint to monitor backend availability. Features a live 
 Security Posture
 ----------------
 Enforces standard TLS certificate verification via rustls-tls.
-The webview operates with zero filesystem, shell, or unrestricted network permissions exposed.
-Frontend communication is restricted to designated Tauri IPC commands.
+The webview operates with zero filesystem, shell, or unrestricted network permissions exposed. Frontend communication is restricted to designated Tauri IPC commands.
 
 
 Project Structure
