@@ -1,3 +1,4 @@
+<pre style="background: transparent; border: none; font-family: monospace; font-size: 13px;">
 TLS Engine Desktop
 ==================
 
@@ -137,3 +138,4 @@ tls-engine-desktop/
     types.ts            - TypeScript definitions
     App.tsx             - Primary UI coordinator
     components/         - UI views, tabs, and modals
+</pre>
