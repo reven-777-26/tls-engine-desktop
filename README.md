@@ -1,4 +1,3 @@
-```text
 TLS Engine Desktop
 ==================
 
@@ -125,7 +124,7 @@ tls-engine-desktop/
   src-tauri/
     Cargo.toml          - Rust manifest and dependencies
     tauri.conf.json     - Tauri v2 window and app settings
-    capabilities/       - Locked-down permission definitions
+    capabilities/       - Minimal locked-down permissions
     src/
       main.rs           - Entry point
       lib.rs            - Invoke handlers and IPC setup
@@ -138,4 +137,3 @@ tls-engine-desktop/
     types.ts            - TypeScript definitions
     App.tsx             - Primary UI coordinator
     components/         - UI views, tabs, and modals
-```
