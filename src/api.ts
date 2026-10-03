@@ -16,7 +16,10 @@ export async function inspectHost(host: string): Promise<InspectionEnvelope> {
   const text = await res.text();
 
   if (!res.ok) {
-    throw new Error(`TLS inspection failed (${res.status}): ${text}`);
+    if (res.status >= 500) {
+      throw new Error(`Could not scan '${host}'. The target website does not have a working HTTPS security certificate or is offline.`);
+    }
+    throw new Error(`Could not scan '${host}'. Please check the domain spelling and try again.`);
   }
 
   const data = JSON.parse(text);

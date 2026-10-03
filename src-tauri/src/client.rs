@@ -53,15 +53,21 @@ impl ApiClient {
             .map_err(|e| format!("Failed to read response body: {}", e))?;
 
         if !status.is_success() {
-            // Attempt to extract error message if JSON was returned
+            if status.as_u16() == 500 || status.is_server_error() {
+                return Err(format!(
+                    "Could not scan '{}'. The target domain does not have a working HTTPS security certificate or is currently unreachable.",
+                    clean_host
+                ));
+            }
+
             if let Ok(err_json) = serde_json::from_str::<serde_json::Value>(&raw_text) {
                 if let Some(msg) = err_json.get("error").and_then(|v| v.as_str()) {
-                    return Err(format!("TLS Inspection failed ({}) for '{}': {}", status.as_u16(), clean_host, msg));
+                    return Err(format!("Could not scan '{}': {}", clean_host, msg));
                 }
             }
+
             return Err(format!(
-                "TLS Inspection service returned HTTP {} for host '{}'. Ensure the host exists and accepts TLS connections on port 443.",
-                status.as_u16(),
+                "Could not connect to '{}'. Please check the domain spelling or verify that the website is online.",
                 clean_host
             ));
         }
