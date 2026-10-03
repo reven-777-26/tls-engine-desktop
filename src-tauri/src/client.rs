@@ -55,7 +55,7 @@ impl ApiClient {
         if !status.is_success() {
             if status.as_u16() == 500 || status.is_server_error() {
                 return Err(format!(
-                    "Could not scan '{}'. The target domain does not have a working HTTPS security certificate or is currently unreachable.",
+                    "The website '{}' does not have a valid security certificate or is currently offline. Please check the spelling of the domain and try again.",
                     clean_host
                 ));
             }

@@ -17,7 +17,7 @@ export async function inspectHost(host: string): Promise<InspectionEnvelope> {
 
   if (!res.ok) {
     if (res.status >= 500) {
-      throw new Error(`Could not scan '${host}'. The target website does not have a working HTTPS security certificate or is offline.`);
+      throw new Error(`The website '${host}' does not have a valid security certificate or is currently offline. Please check the spelling of the domain and try again.`);
     }
     throw new Error(`Could not scan '${host}'. Please check the domain spelling and try again.`);
   }
