@@ -53,7 +53,7 @@ import { initAppleSmoothScroll } from "./smoothScroll";
 
 export function App() {
   const [activeNav, setActiveNav] = useState("inspect");
-  const [activeTab, setActiveTab] = useState<"overview" | "chain" | "protocols" | "headers" | "json">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "chain" | "protocols" | "json">("overview");
   const [isHistoryOpen, setIsHistoryOpen] = useState(true);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isShortcutsOpen, setIsShortcutsOpen] = useState(false);
@@ -568,17 +568,6 @@ export function App() {
             </button>
 
             <button
-              className={`tab-btn ${activeTab === "headers" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("headers");
-                setActiveNav("inspect");
-              }}
-            >
-              <Radio size={14} />
-              <span>HTTP Headers</span>
-            </button>
-
-            <button
               className={`tab-btn ${activeTab === "json" ? "active" : ""}`}
               onClick={() => {
                 setActiveTab("json");
@@ -616,9 +605,6 @@ export function App() {
                 <ChainTab chain={currentInspection.data.certificates?.chain} dateFormat={settings.dateFormat} />
               )}
               {activeTab === "protocols" && <ProtocolsTab envelope={currentInspection} />}
-              {activeTab === "headers" && (
-                <HeadersTab metadata={currentInspection.metadata} />
-              )}
               {activeTab === "json" && (
                 <RawJsonTab
                   rawJson={currentInspection.raw_json}

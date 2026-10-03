@@ -221,26 +221,7 @@ export const OverviewTab: React.FC<OverviewTabProps> = ({ envelope, dateFormat =
         </div>
       )}
 
-      {/* HTTP Metadata Summary Card */}
-      <div className="section-card">
-        <div className="card-title">
-          <Radio size={16} />
-          <span>HTTP Transport Diagnostics</span>
-        </div>
-
-        <div className="grid-2">
-
-          <div className="metric-row">
-            <span className="metric-label">Edge Server</span>
-            <span className="metric-value">{metadata.server || "N/A"}</span>
-          </div>
-
-          <div className="metric-row">
-            <span className="metric-label">Service Origin Engine</span>
-            <span className="metric-value">{metadata.x_powered_by || "TLS Engine"}</span>
-          </div>
-        </div>
-      </div>
+      {/* Subject Alternative Names block end */}
     </div>
   );
 };
